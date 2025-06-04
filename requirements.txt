@@ -3,3 +3,4 @@ python-docx
 docx2pdf
 streamlit
 python-dotenv
+boto3

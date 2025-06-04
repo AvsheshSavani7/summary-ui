@@ -8,6 +8,9 @@ from clause_configs.best_efforts_config import BEST_EFFORTS_CLAUSES
 import base64
 from docx import Document
 import subprocess
+import boto3
+from botocore.exceptions import NoCredentialsError
+import urllib.parse
 
 # Configure the page
 st.set_page_config(
@@ -15,6 +18,33 @@ st.set_page_config(
     page_icon="📄",
     layout="wide"
 )
+
+# Initialize AWS credentials from Streamlit secrets
+if 'aws' not in st.secrets:
+    st.error("AWS credentials not found. Please configure AWS credentials in Streamlit secrets.")
+    st.stop()
+
+# Initialize AWS S3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=st.secrets["aws"]["access_key_id"],
+    aws_secret_access_key=st.secrets["aws"]["secret_access_key"],
+    region_name=st.secrets["aws"]["region"]
+)
+S3_BUCKET = st.secrets["aws"]["bucket_name"]
+
+def upload_to_s3(local_file, s3_file):
+    try:
+        s3_client.upload_file(local_file, S3_BUCKET, s3_file)
+        # Generate a public URL (if bucket is public)
+        url = f"https://{S3_BUCKET}.s3.amazonaws.com/{urllib.parse.quote(s3_file)}"
+        return url
+    except NoCredentialsError:
+        st.error("AWS credentials not available")
+        return None
+    except Exception as e:
+        st.error(f"Error uploading to S3: {str(e)}")
+        return None
 
 # Add a title
 st.title("Merger Summary Generator")
@@ -29,7 +59,7 @@ uploaded_file = st.file_uploader("Upload your JSON schema file", type=['json'])
 # Initialize CLAUSE_CONFIG
 CLAUSE_CONFIG = {
     **ORDINARY_COURSE_CLAUSES,
-    **BEST_EFFORTS_CLAUSES,
+    # **BEST_EFFORTS_CLAUSES,
 }
 
 def read_docx_text(path):
@@ -104,6 +134,10 @@ def display_pdf(pdf_path):
         st.error(f"Error displaying PDF: {str(e)}")
         st.info("Please use the download button to view the document.")
 
+def display_office_viewer(docx_url):
+    viewer_url = f"https://view.officeapps.live.com/op/embed.aspx?src={urllib.parse.quote(docx_url)}"
+    st.markdown(f'<iframe src="{viewer_url}" width="100%" height="600px" frameborder="0"></iframe>', unsafe_allow_html=True)
+
 # Create tabs for different views
 tab1, tab2 = st.tabs(["Generator", "Document Preview"])
 
@@ -123,29 +157,23 @@ with tab1:
                     write_docx_summary(summary_outputs)
                     st.session_state.doc_generated = True
                     
-                    # Convert DOCX to PDF
+                    # Upload to S3
                     docx_path = "clause_summary_output.docx"
-                    pdf_path = "clause_summary_output.pdf"
-                    
-                    # Display download button for DOCX
                     if os.path.exists(docx_path):
-                        with open(docx_path, "rb") as file:
-                            st.download_button(
-                                label="Download DOCX",
-                                data=file,
-                                file_name="clause_summary_output.docx",
-                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                            )
-                    
-                    # Try to convert to PDF and show PDF download button
-                    if convert_docx_to_pdf(docx_path, pdf_path):
-                        if os.path.exists(pdf_path):
-                            with open(pdf_path, "rb") as file:
+                        with st.spinner('Uploading document to S3...'):
+                            s3_file_name = f"summaries/{os.path.basename(docx_path)}"
+                            docx_url = upload_to_s3(docx_path, s3_file_name)
+                            if docx_url:
+                                st.session_state.docx_url = docx_url
+                                st.success("✅ Document uploaded successfully!")
+                            
+                            # Display download button for DOCX
+                            with open(docx_path, "rb") as file:
                                 st.download_button(
-                                    label="Download PDF",
+                                    label="Download DOCX",
                                     data=file,
-                                    file_name="clause_summary_output.pdf",
-                                    mime="application/pdf"
+                                    file_name="clause_summary_output.docx",
+                                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                 )
                     
                     st.success("✅ Summary generated successfully!")
@@ -158,15 +186,8 @@ with tab1:
 
 with tab2:
     st.subheader("Document Preview")
-    if st.session_state.doc_generated:
-        if os.path.exists("clause_summary_output.pdf"):
-            display_pdf("clause_summary_output.pdf")
-        elif os.path.exists("clause_summary_output.docx"):
-            st.subheader("📄 DOCX Text Preview")
-            doc_text = read_docx_text("clause_summary_output.docx")
-            st.text_area("Raw Text Preview", doc_text, height=500)
-        else:
-            st.info("Document preview is not available. Please generate a summary first.")
+    if st.session_state.doc_generated and hasattr(st.session_state, 'docx_url'):
+        display_office_viewer(st.session_state.docx_url)
     else:
         st.info("No document has been generated yet. Please generate a summary first.")
 
