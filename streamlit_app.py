@@ -22,6 +22,7 @@ import subprocess
 import boto3
 from botocore.exceptions import NoCredentialsError
 import urllib.parse
+from datetime import datetime
 
 # Configure the page
 st.set_page_config(
@@ -183,10 +184,21 @@ with tab1:
                     docx_path = "clause_summary_output.docx"
                     if os.path.exists(docx_path):
                         with st.spinner('Uploading document to S3...'):
-                            s3_file_name = f"summaries/{os.path.basename(docx_path)}"
+                             # Get original filename without extension
+                            original_filename = os.path.splitext(uploaded_file.name)[0]
+                            
+                            # Create timestamp
+                            timestamp = datetime.now().strftime("%d-%m-%Y_%I-%M%p")
+                            
+                            # Create new filename with timestamp
+                            new_filename = f"{original_filename}_{timestamp}.docx"
+                            
+                            # Create S3 path
+                            s3_file_name = f"summaries/{new_filename}"
                             docx_url = upload_to_s3(docx_path, s3_file_name)
                             if docx_url:
                                 st.session_state.docx_url = docx_url
+                                # st.write(f"Document URL: {docx_url}")  # Debug info
                                 st.success("✅ Document uploaded successfully!")
                             
                             # Display download button for DOCX
@@ -194,7 +206,7 @@ with tab1:
                                 st.download_button(
                                     label="Download DOCX",
                                     data=file,
-                                    file_name="clause_summary_output.docx",
+                                     file_name=new_filename,
                                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                 )
                     
@@ -208,10 +220,26 @@ with tab1:
 
 with tab2:
     st.subheader("Document Preview")
+    # Add debug information
+    # st.write("Debug Info:")
+    st.write(f"Document Generated: {st.session_state.doc_generated}")
+    # st.write(f"Document URL exists: {hasattr(st.session_state, 'docx_url')}")
+    # if hasattr(st.session_state, 'docx_url'):
+        # st.write(f"Document URL: {st.session_state.docx_url}")
+    
     if st.session_state.doc_generated and hasattr(st.session_state, 'docx_url'):
-        display_office_viewer(st.session_state.docx_url)
+        try:
+            st.write("Attempting to display document...")
+            display_office_viewer(st.session_state.docx_url)
+        except Exception as e:
+            st.error(f"Error displaying document: {str(e)}")
+            st.write("Fallback to direct URL:")
+            st.write(st.session_state.docx_url)
     else:
-        st.info("No document has been generated yet. Please generate a summary first.")
+        if not st.session_state.doc_generated:
+            st.info("No document has been generated yet. Please generate a summary first.")
+        elif not hasattr(st.session_state, 'docx_url'):
+            st.warning("Document was generated but URL is not available. Try generating the document again.")
 
 # Add some helpful instructions
 st.sidebar.markdown("""
