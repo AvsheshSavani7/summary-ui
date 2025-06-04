@@ -5,6 +5,17 @@ import json
 from summary_engine import process_clause_config, write_docx_summary
 from clause_configs.ordinary_course_config import ORDINARY_COURSE_CLAUSES
 from clause_configs.best_efforts_config import BEST_EFFORTS_CLAUSES
+from clause_configs.termination_config import TERMINATION_CLAUSES
+from clause_configs.non_solicitation_config import NON_SOLICITATION_CLAUSES
+from clause_configs.condition_to_closing_config import CONDITION_TO_CLOSING_CLAUSES
+from clause_configs.financing_summary_config import FINANCING_SUMMARY_CLAUSES
+from clause_configs.closing_mechanics_config  import CLOSING_MECHANICS_CLAUSES
+from clause_configs.proxy_shareholder_config  import PROXY_SHAREHOLDER_CLAUSES
+from clause_configs.specific_performance_config  import SPECIFIC_PERFORMANCE_CLAUSES
+from clause_configs.law_jurisdiction_config  import LAW_JURISDICTION_CLAUSES
+from clause_configs.party_details_config  import PARTY_DETAILS_CLAUSES
+from clause_configs.timeline_config  import TIMELINE_CLAUSES
+from clause_configs.outside_date_config  import OUTSIDE_DATE_CLAUSES
 import base64
 from docx import Document
 import subprocess
@@ -59,7 +70,18 @@ uploaded_file = st.file_uploader("Upload your JSON schema file", type=['json'])
 # Initialize CLAUSE_CONFIG
 CLAUSE_CONFIG = {
     **ORDINARY_COURSE_CLAUSES,
-    # **BEST_EFFORTS_CLAUSES,
+    **BEST_EFFORTS_CLAUSES,
+    **TERMINATION_CLAUSES,
+    **NON_SOLICITATION_CLAUSES,
+    **FINANCING_SUMMARY_CLAUSES,
+    **CLOSING_MECHANICS_CLAUSES,
+    **CONDITION_TO_CLOSING_CLAUSES,
+    **PROXY_SHAREHOLDER_CLAUSES,
+    **SPECIFIC_PERFORMANCE_CLAUSES,
+    **LAW_JURISDICTION_CLAUSES,
+    **PARTY_DETAILS_CLAUSES,
+    **TIMELINE_CLAUSES,
+    **OUTSIDE_DATE_CLAUSES
 }
 
 def read_docx_text(path):
@@ -200,5 +222,5 @@ st.sidebar.markdown("""
 4. Switch between tabs to view:
    - Generator: Create and download summaries
    - Document Preview: View the generated document
-5. Download the document in DOCX or PDF format
+5. Download the document in DOCX
 """)
