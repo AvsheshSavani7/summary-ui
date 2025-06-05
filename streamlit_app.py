@@ -108,8 +108,8 @@ def generate_summary(json_data):
                     **result
                 })
     
-    summary_outputs_sorted = sorted(summary_outputs, key=lambda x: x['summary_rank'])
-    return summary_outputs_sorted
+    # summary_outputs_sorted = sorted(summary_outputs, key=lambda x: x['summary_rank'])
+    return summary_outputs
 
 def convert_docx_to_pdf(docx_path, pdf_path):
     try:
@@ -240,9 +240,10 @@ with tab2:
             st.info("No document has been generated yet. Please generate a summary first.")
         elif not hasattr(st.session_state, 'docx_url'):
             st.warning("Document was generated but URL is not available. Try generating the document again.")
+last_modified = datetime.fromtimestamp(os.path.getmtime(__file__)).strftime('%B %d, %Y')
 
 # Add some helpful instructions
-st.sidebar.markdown("""
+st.sidebar.markdown(f"""
 ## How to use:
 1. Upload your JSON schema file using the file uploader
 2. Click the 'Generate Summary' button
@@ -251,4 +252,5 @@ st.sidebar.markdown("""
    - Generator: Create and download summaries
    - Document Preview: View the generated document
 5. Download the document in DOCX
+
 """)
