@@ -101,8 +101,8 @@ def simplify_json(input_file, output_file):
     print(f"Simplified JSON has been written to {output_file}")
 
 if __name__ == "__main__":
-    input_file = "CATALENT_03-06-25.json"
-    output_file = "CATALENT_Schema.json"
+    input_file = "Azek_04-06-25_Schema.json"
+    output_file = "Azek_Schema.json"
     
     if not os.path.exists(input_file):
         print(f"Error: Input file {input_file} not found.")

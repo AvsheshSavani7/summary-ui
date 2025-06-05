@@ -38,8 +38,7 @@ PROXY_SHAREHOLDER_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 30,
             "summary_display_section": "Proxy and Shareholder Vote Best Efforts ",
-            "summary_display_sub_section": "Filing Timing",
-            "summary_rank": 6,
+            "summary_rank": 1,
             "view_prompt": True
         },
 
@@ -80,8 +79,7 @@ PROXY_SHAREHOLDER_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 30,
             "summary_display_section": "Proxy and Shareholder Vote Best Efforts ",
-            "summary_display_sub_section": "Effectiveness Efforts",
-            "summary_rank": 6,
+            "summary_rank": 2,
             "view_prompt": True
         },
 
@@ -122,8 +120,7 @@ PROXY_SHAREHOLDER_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 30,
             "summary_display_section": "Proxy and Shareholder Vote Best Efforts ",
-            "summary_display_sub_section": "Shareholder Meeting",
-            "summary_rank": 6,
+            "summary_rank": 3,
             "view_prompt": True
         },
 
@@ -166,8 +163,7 @@ PROXY_SHAREHOLDER_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 50,
             "summary_display_section": "Proxy and Shareholder Vote Best Efforts ",
-            "summary_display_sub_section": "Reaching a Quarum",
-            "summary_rank": 6,
+            "summary_rank": 4,
             "view_prompt": True
         }
 }      

@@ -30,9 +30,6 @@ BEST_EFFORTS_CLAUSES = {
             "Use precise legal language but avoid verbosity. If the buyer is not obligated to take any remedy actions on its business, clearly state that. "
             "If the cap is zero or not applicable, explicitly note it.\n\n"
             "- Parent Divestiture Notes: {parent_notes}"
-            "Example Outputs : \n"
-            "	There is a divestiture cap on Target businesses that generated $130mm in 2002 sales, and Parent is not required to take any Remedy Action on any of its businesses."
-            "	There is a materiality limitation on divestiture and remedial actions relative to the size of the pro forma company."	
         ),
         "output_field": "divestiture_commitments_summary",
         "reference_fields": ["best_efforts.divestiture_commitments.divestiture_required.reference_section"],
@@ -41,8 +38,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":50,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Divestiture commitments",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -73,21 +69,8 @@ BEST_EFFORTS_CLAUSES = {
         }
         }
     ],
- 	"prompt_template": (
-                        "### Instruction\n" 
-                        "You are a legal analyst reviewing an M&A agreement.\n"
-                        "Summarize the litigation requirement status in **one sentence**.\n"
-                        "Focus:\n"
-                        "Ignore procedural language and extract only whether the Parent is required to defend against litigation to allow the Merger to close.\n\n"
-                        "### Input:\n"
-                        "{litigation_requirement_status} \n\n"
-                        "### Examples:\n"
-                        "• Parent is required to defend against any litigation.\n"
-                        "• BMY is required to defend against any litigation.\n"
-                        "• Nippon is required to defend against any litigatio\n"
-                        "Follow the structure and brevity of the examples exactly.\n"
-                        
-                        ),
+    "prompt_template": "Summarize the litigation requirement status in one line:\n\n- Details: {litigation_requirement_status}",
+
     "output_field": "litigation_requirement_summary",
     "reference_fields": [
         "best_efforts.litigation_commitments.litigation_requirement_status.reference_section"
@@ -97,8 +80,7 @@ BEST_EFFORTS_CLAUSES = {
     "format_style": "",
     "max_words": 25,
     "summary_display_section": "Best Efforts",
-    "summary_display_sub_section": "Litigation commitments",
-    "summary_rank": 7,
+    "summary_rank": 1,
     "view_prompt": True
     },
 
@@ -138,8 +120,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "HSR",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -175,8 +156,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "CFIIUS",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
    
@@ -216,8 +196,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Foreign Filing",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
      
@@ -252,8 +231,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Standard",
-        "summary_rank": 7,
+        "summary_rank": 4,
         "view_prompt": True
     }, 
     
@@ -291,8 +269,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Withdrawal controls",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -331,8 +308,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Timing agreement",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -375,8 +351,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Divestiture Cap",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -415,8 +390,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Prior Approval Commitment",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
     
@@ -455,8 +429,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Transaction Interference",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
         
@@ -496,8 +469,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "Second Request Certification",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
       
@@ -541,8 +513,7 @@ BEST_EFFORTS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":100,
         "summary_display_section": "Best Efforts",
-        "summary_display_sub_section": "FTC Warning Letter Handling",
-        "summary_rank": 7,
+        "summary_rank": 1,
         "view_prompt": True
     },
    

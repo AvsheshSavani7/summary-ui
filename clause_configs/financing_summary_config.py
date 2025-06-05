@@ -10,7 +10,8 @@ FINANCING_SUMMARY_CLAUSES = {
                     "type": "boolean",
                     "true": {
                         "add_to_prompt": {
-                            "financing_summary_info": "financing.committed_financing.committed_financing_summary.answer"
+                            "financing_summary_present": "{{financing.committed_financing.committed_financing_present.clause_text}}",
+                            "financing_summary_details": "{{financing.committed_financing.committed_financing_summary.answer}}"
                         }
                     },
                     "false": {
@@ -19,8 +20,18 @@ FINANCING_SUMMARY_CLAUSES = {
                 }
             ],
             "prompt_template": (
-                "Summarize the Committed Financing below. Focus on Parent received committed financing from Bank."
-                "{financing_summary_info}"
+                "You are a legal analyst summarizing the committed financing structure in a merger agreement.\n\n"
+                "Task:\n"
+                "- Determine whether the Parent has received committed financing to fund the transaction.\n"
+                "- Focus on whether a Debt Commitment Letter has been delivered and name the financing sources (banks or institutions) if mentioned.\n"
+                "- Do not rephrase legal terms. Extract what is stated in plain terms.\n"
+                "- Output a concise one-sentence summary like: 'Parent has received committed financing from [Bank Names].'\n"
+                "- If no information is available, return nothing.\n\n"
+                "-- Provided Fields:\n"
+                "{financing_summary_present}\n"
+                "{financing_summary_details}\n\n"
+                "--- Example Output:\n"
+                "Parent has received committed financing from Bank of America and Jefferies Finance."
             ),
             "output_field": "committed_financing_summary",
             
@@ -28,11 +39,10 @@ FINANCING_SUMMARY_CLAUSES = {
             "use_short_reference": False,
             
             "summary_type": "Concise",
-            "format_style": "bullet",
+            "format_style": "paragraph",
             "max_words": 50,
-            "summary_display_section": "Financing",
-            "summary_display_sub_section": "Committed Financing",
-           "summary_rank": 9,
+            "summary_display_section": "Conditions & Financing",
+            "summary_rank": 4,
             "view_prompt": True
         },
 
@@ -74,8 +84,7 @@ FINANCING_SUMMARY_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 150,
             "summary_display_section": "Financing",
-            "summary_display_sub_section": "Committed Financing",
-           "summary_rank": 9,
+            "summary_rank": 1,
             "view_prompt": True
         },
 
@@ -114,8 +123,7 @@ FINANCING_SUMMARY_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 150,
             "summary_display_section": "Financing",
-            "summary_display_sub_section": "Financing Efforts Summary",
-           "summary_rank": 9,
+            "summary_rank": 1,
             "view_prompt": False
         },
 
@@ -152,8 +160,7 @@ FINANCING_SUMMARY_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 150,
             "summary_display_section": "Financing",
-            "summary_display_sub_section": "Substitute Financing Notice And Efforts",
-           "summary_rank": 9,
+            "summary_rank": 1,
             "view_prompt": False
         }
 }

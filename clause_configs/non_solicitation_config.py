@@ -1,5 +1,5 @@
 NON_SOLICITATION_CLAUSES = {
-    "Non Solicitation : Match Right": {
+    "Non Solicitation : Match Right Concise": {
         "question": "Timing related to Match Right",
         "conditions": [
             {
@@ -8,7 +8,8 @@ NON_SOLICITATION_CLAUSES = {
                 "type": "boolean",
                 "true": {
                     "add_to_prompt": {
-                        "match_right": "non_solicitation.match_right.match_right_initial_explanation.answer"
+                        "match_right": "{{non_solicitation.match_right.match_right_initial_explanation.clause_text}}",
+                        "match_right_ammended": "{{non_solicitation.match_right.match_right_amended_included.clause_text}}"
                     }
                 },
                 "false": {
@@ -22,16 +23,21 @@ NON_SOLICITATION_CLAUSES = {
             "You are a legal and financial analyst reviewing a clause in a merger agreement.\n\n"
             "Task:\n"
             "- Identify the exact timing allowed for matching an offer.\n"
-            "- Return a single sentence that uses the  language from the clause.\n"
+            "- Include both the initial right-to-match period and, if stated separately, the period for responding to amended or revised proposals.\n"
+            "- Return a single concise sentence using the **exact language** from the clause(s) with a focus on timing.\n"
             "- Do not paraphrase, generalize, or interpret the meaning.\n"
             "- Do not provide examples, commentary, or additional context.\n"
             "- The sentence should begin naturally (e.g., 'Parent has...') and reflect only what is written.\n\n"
-            "Examples:\n"
-            "---\n"
-            "Output:\n"
-            "--- Parent has a XXX Business Day right-to-match.\n"
-            "Clause Text:\n"
-            "- Match Right: {match_right}\n"
+            "=== Examples ===\n"
+            "Example 1:\n"
+            "Reciprocal four Business Day right-to-match any Company/Parent Superior Proposal; and two Business Days for any subsequent amended proposals.\n"
+            "\nExample 2:\n"
+            "Nippon has a 5 Business Day right-to-match any Superior Proposal; and 3 Business Days for any subsequent amended proposals.\n"
+            "\nExample 3:\n"
+            "JHX has a four Business Day right-to-match any Acquisition Proposal; and two Business Days for any subsequent amended proposals.\n"
+            "\n=== Clause Text to Analyze ===\n"
+            "- Initial Right to Match: {match_right}\n"
+            "- Amended Right to Match: {match_right_ammended}\n"
         ),
         "output_field": "match_right_explanation",
         "reference_fields": [
@@ -43,8 +49,7 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 20,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Match Right",
-        "summary_rank": 8,
+        "summary_rank": 1,
         "view_prompt": True
     },
 
@@ -61,7 +66,7 @@ NON_SOLICITATION_CLAUSES = {
                     }
                 },
                 "false": {
-                    "text_output": "There is no go-shop or window-shop provision."
+                    "text_output": ""
                 }
             }
         ],
@@ -83,9 +88,8 @@ NON_SOLICITATION_CLAUSES = {
         "summary_type": "Fulsome",
         "format_style": "paragraph",
         "max_words": 25,
-        "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Go Shop",
-        "summary_rank": 8,
+        "summary_display_section": "Competing Bid",
+        "summary_rank": 1,
         "view_prompt": True
     },
 
@@ -125,8 +129,7 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 30,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Notice of Competing Offer",
-        "summary_rank": 8,
+        "summary_rank": 3,
         "view_prompt": True
     },
 
@@ -166,8 +169,7 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words":80,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Ongoing Update",
-        "summary_rank": 8,
+        "summary_rank": 4,
         "view_prompt": True
     }   ,
 
@@ -208,8 +210,7 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words":20,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Superior Proposal Engagement",
-        "summary_rank": 8,
+        "summary_rank": 5,
         "view_prompt": True
     },
 
@@ -250,10 +251,65 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words":30,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Adverse Change Superior Offer",
-        "summary_rank": 8,
+        "summary_rank": 6,
         "view_prompt": True
     },
+
+    "Non Solicitation : Match Right Fulsome": {
+        "question": "Timing related to Match Right",
+        "conditions": [
+            {
+                "question": "What is the Match Right Timing",
+                "if": "non_solicitation.match_right.match_right_initial_included.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "match_right": "{{non_solicitation.match_right.match_right_initial_explanation.clause_text}}",
+                        "match_right_ammended": "{{non_solicitation.match_right.match_right_amended_included.clause_text}}"
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "match_right": "A right-to-match was not included in the merger contract."
+                    }
+                }
+            }
+        ],
+        "prompt_template": (
+            "You are a legal and financial analyst reviewing a clause in a merger agreement.\n\n"
+            "Task:\n"
+            "- Identify the exact timing allowed for matching an offer.\n"
+            "- Include both the initial right-to-match period and, if stated separately, the period for responding to amended or revised proposals.\n"
+            "- Return a single sentence using the **exact language** from the clause(s).\n"
+            "- Do not paraphrase, generalize, or interpret the meaning.\n"
+            "- Do not provide examples, commentary, or additional context.\n"
+            "- The sentence should begin naturally (e.g., 'Parent has...') and reflect only what is written.\n\n"
+            "=== Examples ===\n"
+            "Example 1:\n"
+            "Reciprocal four Business Day right-to-match any Company/Parent Superior Proposal; and two Business Days for any subsequent amended proposals.\n"
+            "\nExample 2:\n"
+            "Nippon has a 5 Business Day right-to-match any Superior Proposal; and 3 Business Days for any subsequent amended proposals.\n"
+            "\nExample 3:\n"
+            "JHX has a four Business Day right-to-match any Acquisition Proposal; and two Business Days for any subsequent amended proposals.\n"
+            "\n=== Clause Text to Analyze ===\n"
+            "- Initial Right to Match: {match_right}\n"
+            "- Amended Right to Match: {match_right_ammended}\n"
+        ),
+        "output_field": "match_right_explanation",
+        "reference_fields": [
+            "non_solicitation.match_right.match_right_initial_included.reference_section",
+            "non_solicitation.match_right.match_right_explanation.reference_section"
+        ],
+        "use_short_reference": True,
+        "summary_type": "Concise",
+        "format_style": "paragraph",
+        "max_words": 20,
+        "summary_display_section": "Non Solicitation",
+        "summary_rank": 1,
+        "view_prompt": True
+    },
+
+
 
    "Non Solicitation : Adverse Change Intervening Event": {
         "question": "Can an adverse board change be made for an intervening event",
@@ -292,8 +348,7 @@ NON_SOLICITATION_CLAUSES = {
         "format_style": "paragraph",
         "max_words":30,
         "summary_display_section": "Non Solicitation",
-        "summary_display_sub_section": "Adverse Change Intervening Event",
-        "summary_rank": 8,
+        "summary_rank": 7,
         "view_prompt": True
     }
 

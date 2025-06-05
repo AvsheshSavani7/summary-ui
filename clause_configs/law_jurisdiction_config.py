@@ -32,8 +32,7 @@ LAW_JURISDICTION_CLAUSES = {
             "format_style": "phrase without bullet point",
             "max_words": 50,
             "summary_display_section": "Law and Jurisdiction",
-            "summary_display_sub_section": "Governing Law",
-            "summary_rank": 12,
+            "summary_rank": 1,
             "view_prompt": True
         },
 
@@ -69,8 +68,7 @@ LAW_JURISDICTION_CLAUSES = {
                 "format_style": "paragraph",
                 "max_words": 150,
                 "summary_display_section": "Law and Jurisdiction",
-                "summary_display_sub_section": "MAE Interpretation Jurisdiction",
-                "summary_rank": 12,
+                "summary_rank": 1,
                 "view_prompt": True
             },
 
@@ -105,8 +103,7 @@ LAW_JURISDICTION_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 150,
             "summary_display_section": "Law and Jurisdiction",
-            "summary_display_sub_section": "Financing Jurisdiction",
-            "summary_rank": 12,
+            "summary_rank": 1,
             "view_prompt": True
         },
 
@@ -139,8 +136,7 @@ LAW_JURISDICTION_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 150,
             "summary_display_section": "Law and Jurisdiction",
-            "summary_display_sub_section": "Arbitration Clause",
-            "summary_rank": 12,
+            "summary_rank": 1,
             "view_prompt": True
         }
 }

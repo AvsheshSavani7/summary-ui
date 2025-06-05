@@ -70,8 +70,7 @@ TIMELINE_CLAUSES = {
         "format_style": "List with no bullets",  # You can use this to trigger mixed formatting logic
         "max_words": 300,
         "summary_display_section": "Termination Provisions",
-        "summary_display_sub_section": "Timeline",
-        "summary_rank": 14,
+        "summary_rank": 1,
         "view_prompt": True
     }
 }

@@ -36,8 +36,7 @@ CLOSING_MECHANICS_CLAUSES = {
         "format_style": "bullet",
         "max_words": 50,
         "summary_display_section": "Closing Mechanics",
-        "summary_display_sub_section": "Closing Mechanics",
-        "summary_rank": 3,
+        "summary_rank": 4,
         "view_prompt": True
     },
 
@@ -83,8 +82,7 @@ CLOSING_MECHANICS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":150,
         "summary_display_section": "Closing Mechanics",
-        "summary_display_sub_section": "Marketing Period",
-        "summary_rank": 3,
+        "summary_rank": 4,
         "view_prompt": True
     },
 
@@ -127,8 +125,7 @@ CLOSING_MECHANICS_CLAUSES = {
         "format_style": "paragraph",
         "max_words":150,
         "summary_display_section": "Closing Mechanics",
-        "summary_display_sub_section": "Inside Date",
-        "summary_rank": 3,
+        "summary_rank": 4,
         "view_prompt": True
     },
 }

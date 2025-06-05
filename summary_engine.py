@@ -161,8 +161,10 @@ def evaluate_condition_branch(condition, data):
 def resolve_prompt_fields(prompt_dict, data):
     resolved = {}
     for k, v in prompt_dict.items():
-        if isinstance(v, str) and "." in v:
-            val = get_nested_value(data, v)
+        if isinstance(v, str) and v.startswith("{{") and v.endswith("}}"):
+            key_path = v[2:-2].strip()  # Strip the double braces
+            val = get_nested_value(data, key_path)
+
             if val and isinstance(val, str):
                 match = re.search(r"(\d+)\s+Business Days after.*(date of the Agreement|Signing Date)", val, re.IGNORECASE)
                 if match:
@@ -177,10 +179,12 @@ def resolve_prompt_fields(prompt_dict, data):
                 else:
                     resolved[k] = val
             else:
-                resolved[k] = val
+                resolved[k] = val if val is not None else ""
         else:
+            # Treat as literal value
             resolved[k] = v
     return resolved
+
 
 # =========================
 # Process a Single Clause Config
@@ -245,7 +249,7 @@ def process_clause_config(clause_config, data):
             "summary_type": clause_config.get("summary_type"),
             "format_style": clause_config.get("format_style"),
             "summary_display_section": clause_config.get("summary_display_section"),
-            "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
+            # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
             "summary_rank": clause_config.get("summary_rank"),
             "max_words": clause_config.get("max_words")
         }
@@ -258,7 +262,7 @@ def process_clause_config(clause_config, data):
             "summary_type": clause_config.get("summary_type"),
             "format_style": clause_config.get("format_style"),
             "summary_display_section": clause_config.get("summary_display_section"),
-            "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
+            # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
             "summary_rank": clause_config.get("summary_rank"),
             "max_words": clause_config.get("max_words")
         }
@@ -269,7 +273,7 @@ def process_clause_config(clause_config, data):
         "summary_type": clause_config.get("summary_type"),
         "format_style": clause_config.get("format_style"),
         "summary_display_section": clause_config.get("summary_display_section"),
-        "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
+        # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
         "summary_rank": clause_config.get("summary_rank"),
         "max_words": clause_config.get("max_words")
     }
@@ -340,8 +344,8 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
                 doc.add_heading(s.get("summary_display_section"), level=2)
                 already_print.append(s.get("summary_display_section"))
            
-            if s.get("summary_display_sub_section").lower() != "" :        
-                doc.add_heading(s.get("summary_display_sub_section"), level=3)
+            # if s.get("summary_display_sub_section").lower() != "" :        
+            #     doc.add_heading(s.get("summary_display_sub_section"), level=3)
             bullet_para = doc.add_paragraph()
             bullet_para.paragraph_format.left_indent = Inches(0.25)
             bullet_para.paragraph_format.first_line_indent = -Inches(0.25)

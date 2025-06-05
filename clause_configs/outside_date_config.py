@@ -9,9 +9,8 @@ OUTSIDE_DATE_CLAUSES = {
                 "type": "non_empty",
                 "true": {
                     "add_to_prompt": {
-                        "outside_date_timing": "termination.outside_date.primary_date.clause_text",
-                        "signing_date": "timeline.agreement_signing_date.agreement_signing_date.clause_text",
-                        "extensions_list": "termination.extension.extension_list.clause_text"
+                        "outside_date_timing": "{{termination.outside_date.primary_date.answer}}",
+                        "extensions_list": "{{termination.extension.extension_list.clause_text}}"
                     }
                 },
                 "false": {
@@ -22,16 +21,17 @@ OUTSIDE_DATE_CLAUSES = {
         "prompt_template": (
             "You are a legal analyst reviewing a clause in a merger agreement.\n\n"
             "Task:\n"
-            "- Use the Signing Date below to compute the exact Outside Date if the clause states a number of months or days from that date.\n"
-            "- If a specific calendar date is provided, extract and return it directly.\n"
-            "- If an extension is specified (e.g., 'automatically extends for 3 months'), include it on a second line, exactly as described.\n"
-            "- Do not include summaries, explanations, or fallback phrasing like 'cannot be determined'.\n"
-            "- If no date can be calculated or extracted, return nothing.\n"
-            "- Format: 'Outside Date = Month DD, YYYY' on one line. Optional extension logic on the next line.\n\n"
+            "- State the outside date if known, and then summarize any applicable extentions with included timing and reasons.\n"
+            "- If an extension is specified (e.g., 'automatically extends for 3 months'), include it as part of the original sentences, exactly as described.\n"
+            "- Do not include summaries, explanations, or fallback phrasing like 'cannot be determined'.\n\n"
             "Clause Text:\n"
-            "-- {outside_date_timing}\n"
-            "-- Agreement Signing Date = \"{signing_date}\"\n"
-            "-- {extensions_list}\n"
+            "-- Outside Date: {outside_date_timing}\n"
+            "-- Extensions List: {extensions_list}\n\n"
+            "--- Examples\n"
+            "Outside date is September 18, 2025; automatically extends to March 18, 2025 and then June 18, 2025 if any Required Approvals remain outstanding.\n"
+            "Outside date is March 23, 2026; automatically extends for 3 months if antitrust review/s remain outstanding."
+            "Outside date is January 2, 2020; may be extended twice, by either party, for sixty days if any antitrust condition remains outstanding."
+
         ),
         "output_field": "consise_standard_summary",
         "reference_fields": [
@@ -40,10 +40,9 @@ OUTSIDE_DATE_CLAUSES = {
         "use_short_reference": True,
         "summary_type": "Concise",
         "format_style": "paragraph",
-        "max_words": 20,
-        "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Termination - Outside Date",
-        "summary_rank": 10,
+        "max_words": 50,
+        "summary_display_section": "Regulatory",
+        "summary_rank": 1,
         "view_prompt": True
     },
 
@@ -90,8 +89,7 @@ OUTSIDE_DATE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 40,
         "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Termination - Outside Date",
-        "summary_rank": 10,
+        "summary_rank": 3,
         "view_prompt": True
     },
 
@@ -133,8 +131,7 @@ OUTSIDE_DATE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 40,
         "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Extension Discretion",
-        "summary_rank": 10,
+        "summary_rank": 4,
         "view_prompt": True
     },
 
@@ -179,8 +176,7 @@ OUTSIDE_DATE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 40,
         "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Extension Discretion Breach",
-        "summary_rank": 10,
+        "summary_rank": 5,
         "view_prompt": True
     },
 
@@ -219,8 +215,7 @@ OUTSIDE_DATE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 20,
         "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Termination Fee",
-        "summary_rank": 10,
+        "summary_rank": 6,
         "view_prompt": True
     },
 
@@ -258,8 +253,7 @@ OUTSIDE_DATE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 20,
         "summary_display_section": "Termination - Outside Date",
-        "summary_display_sub_section": "Reverse Termination Fee",
-        "summary_rank": 10,
+        "summary_rank": 7,
         "view_prompt": True
     }
 }

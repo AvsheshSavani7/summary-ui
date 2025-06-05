@@ -38,8 +38,7 @@ ORDINARY_COURSE_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 20,
             "summary_display_section": "Ordinary Course",
-            "summary_display_sub_section": "Covenant",
-            "summary_rank": 11,
+            "summary_rank": 1,
             "view_prompt": True
         },
 
@@ -80,8 +79,7 @@ ORDINARY_COURSE_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 125,
             "summary_display_section": "Ordinary Course",
-            "summary_display_sub_section": "Covenant",
-            "summary_rank": 11,
+            "summary_rank": 1,
             "view_prompt": False
         }
 }

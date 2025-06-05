@@ -34,7 +34,6 @@ PARTY_DETAILS_CLAUSES = {
                 "format_style": "paragraph",
                 "max_words": 25,
                 "summary_display_section": "Party Details",
-                "summary_display_sub_section": "Acquirer",
                 "summary_rank": 1,
                 "view_prompt": True
             },
@@ -70,7 +69,6 @@ PARTY_DETAILS_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 25,
             "summary_display_section": "Party Details",
-            "summary_display_sub_section": "Target",
             "summary_rank": 1,
             "view_prompt": True
         },
@@ -103,7 +101,6 @@ PARTY_DETAILS_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 35,
             "summary_display_section": "Party Details",
-            "summary_display_sub_section": "Subsidiaries",
             "summary_rank": 1,
             "view_prompt": True
         },
@@ -137,7 +134,6 @@ PARTY_DETAILS_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 35,
             "summary_display_section": "Party Details",
-            "summary_display_sub_section": "Acquirer Subsidiaries",
             "summary_rank": 1,
             "view_prompt": True
         },
@@ -172,7 +168,6 @@ PARTY_DETAILS_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 40,
             "summary_display_section": "Party Details",
-            "summary_display_sub_section": "Transaction",
             "summary_rank": 1,
             "view_prompt": True
         },
@@ -206,7 +201,6 @@ PARTY_DETAILS_CLAUSES = {
             "format_style": "paragraph",
             "max_words": 30,
             "summary_display_section": "Party Details",
-            "summary_display_sub_section": "Merger Sub",
             "summary_rank": 1,
             "view_prompt": True
         },

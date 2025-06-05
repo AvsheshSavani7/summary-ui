@@ -37,8 +37,7 @@ SPECIFIC_PERFORMANCE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 20,
         "summary_display_section": "Specific Performance",
-        "summary_display_sub_section": "Specific Performance",
-        "summary_rank": 13,
+        "summary_rank": 1,
         "view_prompt": True
     },
 
@@ -81,12 +80,11 @@ SPECIFIC_PERFORMANCE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 30,
         "summary_display_section": "Specific Performance",
-        "summary_display_sub_section": "Specific Performance",
-        "summary_rank": 13,
+        "summary_rank": 2,
         "view_prompt": True
     },
 
-    "Specific Performance Financing - Fulsome": {
+        "Specific Performance Financing - Fulsome": {
         "question": "Are there limitations from financing on Specific Performance",
         "conditions": [
             {
@@ -123,8 +121,7 @@ SPECIFIC_PERFORMANCE_CLAUSES = {
         "format_style": "paragraph",
         "max_words": 30,
         "summary_display_section": "Specific Performance",
-        "summary_display_sub_section": "Financing",
-        "summary_rank": 13,
+        "summary_rank": 2,
         "view_prompt": True
     }
 
