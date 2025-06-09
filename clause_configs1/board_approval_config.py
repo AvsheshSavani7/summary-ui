@@ -1,0 +1,181 @@
+BOARD_APPROVAL_CLAUSES = {
+
+    "Board Approval - Concise": {
+        "question": "Is board approval specified for the transaction?",
+        "conditions": [
+            {
+                "question": "Target board approval",
+                "if": "board_approval.board_approval.target_board_approval.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "target_approval": "The merger has been approved by the board of the Company."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "target_approval": "The merger has not been approved by the board of the Company."
+                    }
+                }
+            },
+            {
+                "question": "Target board unanimous",
+                "if": "board_approval.board_approval.target_board_unanimous.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "target_unanimous": "The board of the Company approved unanimously."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "target_unanimous": "The board of the Company did not approve unanimously."
+                    }
+                }
+            },
+            {
+                "question": "Acquirer board approval",
+                "if": "board_approval.board_approval.acquirer_board_approval.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "acquirer_approval": "The merger has been approved by the board of the Parent."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "acquirer_approval": "The merger has not been approved by the board of the Parent."
+                    }
+                }
+            },
+            {
+                "question": "Acquirer board unanimous",
+                "if": "board_approval.board_approval.acquirer_board_unanimous.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "acquirer_unanimous": "The board of the Parent approved unanimously."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "acquirer_unanimous": "The board of the Parent did not approve unanimously."
+                    }
+                }
+            }
+        ],
+        "prompt_template": (
+            "Summarize the board approval status for the merger:\n\n"
+            "- Target Company Board: {target_approval}\n"
+            "- Target Unanimity: {target_unanimous}\n"
+            "- Parent Company Board: {acquirer_approval}\n"
+            "- Parent Unanimity: {acquirer_unanimous}\n"
+            "- Combine the above into a single concise statement regarding both the company and parent board approvals. Use legal language, and no words like however.\n"
+            "- If unanimous approval has not been granted by either of the parties simply state they have approval but it is not described as unanimous.\n\n"
+            "--- Examples\n"
+            "Merger has been unanimously approved by the CLEG board; BMY board approval is not described as unanimous.\n"
+            "Merger has been unanimously approved by the X board; Nippon board approval is not described as unanimous.\n"
+            "Merger has been unanimously approved by the boards of AZEK and JHX."
+        ),
+        "output_field": "board_approval_summary_concise",
+        "reference_fields": ["board_approval.board_approval.target_board_approval.reference_section"],
+        "use_short_reference": True,
+        "summary_type": "Concise",
+        "format_style": "paragraph",
+        "max_words": 30,
+        "summary_display_section": "Presigning",
+        "summary_rank": 1.2,
+        "view_prompt": True
+    },
+
+    # Fulsome Summaries
+
+    "Board Approval - Fulsome": {
+        "question": "Is board approval specified for the transaction?",
+        "conditions": [
+            {
+                "question": "Target board approval",
+                "if": "board_approval.board_approval.target_board_approval.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "target_approval": "The merger has been approved by the board of the Company."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "target_approval": "The merger has not been approved by the board of the Company."
+                    }
+                }
+            },
+            {
+                "question": "Target board unanimous",
+                "if": "board_approval.board_approval.target_board_unanimous.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "target_unanimous": "The board of the Company approved unanimously."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "target_unanimous": "The board of the Company did not approve unanimously."
+                    }
+                }
+            },
+            {
+                "question": "Acquirer board approval",
+                "if": "board_approval.board_approval.acquirer_board_approval.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "acquirer_approval": "The merger has been approved by the board of the Parent."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "acquirer_approval": "The merger has not been approved by the board of the Parent."
+                    }
+                }
+            },
+            {
+                "question": "Acquirer board unanimous",
+                "if": "board_approval.board_approval.acquirer_board_unanimous.answer",
+                "type": "boolean",
+                "true": {
+                    "add_to_prompt": {
+                        "acquirer_unanimous": "The board of the Parent approved unanimously."
+                    }
+                },
+                "false": {
+                    "add_to_prompt": {
+                        "acquirer_unanimous": "The board of the Parent did not approve unanimously."
+                    }
+                }
+            }
+        ],
+        "prompt_template": (
+            "Summarize the board approval status for the merger:\n\n"
+            "- Target Company Board: {target_approval}\n"
+            "- Target Unanimity: {target_unanimous}\n"
+            "- Parent Company Board: {acquirer_approval}\n"
+            "- Parent Unanimity: {acquirer_unanimous}\n"
+            "- Combine the above into a single concise statement regarding both the company and parent board approvals. Use legal language, and no words like however.\n"
+            "- If unanimous approval has not been granted by either of the parties simply state they have approval but it is not described as unanimous.\n\n"
+            "--- Examples\n"
+            "Merger has been unanimously approved by the CLEG board; BMY board approval is not described as unanimous.\n"
+            "Merger has been unanimously approved by the X board; Nippon board approval is not described as unanimous.\n"
+            "Merger has been unanimously approved by the boards of AZEK and JHX."
+        ),
+        "output_field": "board_approval_summary_fulsome",
+        "reference_fields": ["board_approval.board_approval.target_board_approval.reference_section"],
+        "use_short_reference": True,
+        "summary_type": "Fulsome",
+        "format_style": "paragraph",
+        "max_words": 30,
+        "summary_display_section": "Board Approval",
+        "summary_rank": 2.1,
+        "view_prompt": True
+    }
+
+}

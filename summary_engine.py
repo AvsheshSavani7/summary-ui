@@ -23,7 +23,9 @@ def load_api_key():
         raise ValueError("OPENAI_API_KEY not found in .env file")
     return api_key
 
+
 openai.api_key = load_api_key()
+
 
 def call_llm(prompt_text, model="gpt-4", temperature=0):
     response = openai.chat.completions.create(
@@ -39,6 +41,8 @@ def call_llm(prompt_text, model="gpt-4", temperature=0):
 # =========================
 # Utility to Traverse Nested Data
 # =========================
+
+
 def get_nested_value(data, path):
     keys = path.split(".")
     for key in keys:
@@ -50,12 +54,16 @@ def get_nested_value(data, path):
 # =========================
 # Utility to Extract Short Reference
 # =========================
+
+
 def shorten_reference(ref_string):
     ref_string = ref_string.replace("ARTICLE Article", "Article")
-    match = re.search(r"(Section\\s\\d+(\\.\\d+)?([a-z])?)", ref_string, re.IGNORECASE)
+    match = re.search(
+        r"(Section\\s\\d+(\\.\\d+)?([a-z])?)", ref_string, re.IGNORECASE)
     if match:
         return match.group(1).strip()
     return ref_string.strip()
+
 
 def extract_short_reference(references, data, fallback_to_section=True):
     short_refs = []
@@ -74,19 +82,25 @@ def extract_short_reference(references, data, fallback_to_section=True):
 # =========================
 # Evaluate One Condition or Group
 # =========================
+
+
 def evaluate_condition_branch(condition, data):
     if "conditions" in condition:
         run_if = condition.get("run_if", "all")
-        subresults = [evaluate_condition_branch(sub, data) for sub in condition["conditions"]]
-        should_run = all("triggered" in res for res in subresults) if run_if == "all" else any("triggered" in res for res in subresults)
+        subresults = [evaluate_condition_branch(
+            sub, data) for sub in condition["conditions"]]
+        should_run = all("triggered" in res for res in subresults) if run_if == "all" else any(
+            "triggered" in res for res in subresults)
 
         if should_run:
             output = {"triggered": True}
             for res in subresults:
                 if "add_to_prompt" in res:
-                    output.setdefault("add_to_prompt", {}).update(res["add_to_prompt"])
+                    output.setdefault("add_to_prompt", {}).update(
+                        res["add_to_prompt"])
                 if "add_references" in res:
-                    output.setdefault("add_references", []).extend(res["add_references"])
+                    output.setdefault("add_references", []).extend(
+                        res["add_references"])
             return output
         return {}
 
@@ -108,11 +122,14 @@ def evaluate_condition_branch(condition, data):
             output["text_output"] = branch["text_output"]
 
         if "add_to_prompt" in branch:
-            resolved_prompt_fields = resolve_prompt_fields(branch["add_to_prompt"], data)
-            output.setdefault("add_to_prompt", {}).update(resolved_prompt_fields)
+            resolved_prompt_fields = resolve_prompt_fields(
+                branch["add_to_prompt"], data)
+            output.setdefault("add_to_prompt", {}).update(
+                resolved_prompt_fields)
 
         if "add_references" in branch:
-            output.setdefault("add_references", []).extend(branch["add_references"])
+            output.setdefault("add_references", []).extend(
+                branch["add_references"])
 
         return output
 
@@ -151,12 +168,15 @@ def evaluate_condition_branch(condition, data):
     if "text_output" in branch:
         output["text_output"] = branch["text_output"]
     if "add_to_prompt" in branch:
-        resolved_prompt_fields = resolve_prompt_fields(branch["add_to_prompt"], data)
+        resolved_prompt_fields = resolve_prompt_fields(
+            branch["add_to_prompt"], data)
         output.setdefault("add_to_prompt", {}).update(resolved_prompt_fields)
     if "add_references" in branch:
-        output.setdefault("add_references", []).extend(branch["add_references"])
+        output.setdefault("add_references", []).extend(
+            branch["add_references"])
 
     return output
+
 
 def resolve_prompt_fields(prompt_dict, data):
     resolved = {}
@@ -166,10 +186,12 @@ def resolve_prompt_fields(prompt_dict, data):
             val = get_nested_value(data, key_path)
 
             if val and isinstance(val, str):
-                match = re.search(r"(\d+)\s+Business Days after.*(date of the Agreement|Signing Date)", val, re.IGNORECASE)
+                match = re.search(
+                    r"(\d+)\s+Business Days after.*(date of the Agreement|Signing Date)", val, re.IGNORECASE)
                 if match:
                     num_days = int(match.group(1))
-                    base_str = get_nested_value(data, "timeline.agreement_signing_date.agreement_signing_date.clause_text")
+                    base_str = get_nested_value(
+                        data, "timeline.agreement_signing_date.agreement_signing_date.clause_text")
                     try:
                         base_date = dateutil.parser.parse(base_str)
                         computed = add_business_days(base_date, num_days)
@@ -186,9 +208,21 @@ def resolve_prompt_fields(prompt_dict, data):
     return resolved
 
 
+def normalize_to_string_list(value):
+    if isinstance(value, str):
+        return [value]
+    elif isinstance(value, dict):
+        return [str(value)]
+    elif isinstance(value, list):
+        return [str(item) if not isinstance(item, str) else item for item in value]
+    else:
+        return [str(value)]  # fallback for other types
+
 # =========================
 # Process a Single Clause Config
 # =========================
+
+
 def process_clause_config(clause_config, data):
     prompt_fields = {}
     references = []
@@ -213,21 +247,27 @@ def process_clause_config(clause_config, data):
         if isinstance(v, list):
             join_type = clause_config.get("join_type", "bullets")
             if join_type == "bullets":
-                prompt_fields[k] = "\n- " + "\n- ".join(v)
+                print(f"Processing field: {k}")
+                print(f"Value (v): {v}")
+                print(
+                    f"Type of first item: {type(v[0]) if isinstance(v, list) and v else 'N/A'}")
+                prompt_fields[k] = "\n- " + \
+                    "\n- ".join(normalize_to_string_list(v))
             elif join_type == "sentences":
-                prompt_fields[k] = " ".join(v)
+                prompt_fields[k] = " ".join(normalize_to_string_list(v))
             else:
-                prompt_fields[k] = "\n".join(v)
+                prompt_fields[k] = "\n".join(normalize_to_string_list(v))
     references.extend(clause_config.get("reference_fields", []))
-    references = list(set(references))    
+    references = list(set(references))
     if clause_config.get("use_short_reference", True):
-        short_refs = extract_short_reference(references, data, fallback_to_section=True)
+        short_refs = extract_short_reference(
+            references, data, fallback_to_section=True)
     else:
         short_refs = [
             get_nested_value(data, path)
             for path in references
             if get_nested_value(data, path)
-        ]    
+        ]
     # If prompt can be built
     if prompt_fields and "prompt_template" in clause_config:
         try:
@@ -277,10 +317,14 @@ def process_clause_config(clause_config, data):
         "summary_rank": clause_config.get("summary_rank"),
         "max_words": clause_config.get("max_words")
     }
+
+
 # =========================
 # DOCX Writer
 # =========================
-SECTION_ORDER = ["Deal Structure", "Termination", "Conditions", "Non Solicitation", "Regulatory", "General"]
+SECTION_ORDER = ["Deal Structure", "Termination",
+                 "Conditions", "Non Solicitation", "Regulatory", "General"]
+
 
 def add_tab_stop(paragraph, position_inches):
     pPr = paragraph._element.get_or_add_pPr()
@@ -299,6 +343,7 @@ def add_tab_stop(paragraph, position_inches):
     tab.set(qn('w:val'), 'left')
     tab.set(qn('w:pos'), position_twips)
     tabs.append(tab)
+
 
 def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
     doc = Document()
@@ -326,7 +371,8 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
     doc.add_paragraph("")
 
     # Concise / Fulsome grouping and content writing
-    for s_type in ["Concise", "Fulsome"]:
+    for s_type in ["Fulsome"]:
+        # for s_type in ["Concise", "Fulsome"]:
         # Header
         p = doc.add_paragraph()
         run = p.add_run(f"{s_type} Summary")
@@ -337,14 +383,14 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
         run.font.color.rgb = RGBColor(0, 0, 0)
         p.paragraph_format.space_after = Pt(4)
 
-        already_print = [];
+        already_print = []
         for s in [summary for summary in summaries if summary.get("summary_type") == s_type]:
             # Main bullet line (+)
-            if s.get("summary_display_section") not in already_print :
+            if s.get("summary_display_section") not in already_print:
                 doc.add_heading(s.get("summary_display_section"), level=2)
                 already_print.append(s.get("summary_display_section"))
-           
-            # if s.get("summary_display_sub_section").lower() != "" :        
+
+            # if s.get("summary_display_sub_section").lower() != "" :
             #     doc.add_heading(s.get("summary_display_sub_section"), level=3)
             bullet_para = doc.add_paragraph()
             bullet_para.paragraph_format.left_indent = Inches(0.25)
@@ -363,13 +409,13 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
             text_run.font.size = Pt(10.5)
 
             # Reference line (○)
-            if s.get("references") and len(s.get("references")) >0 and s.get("references")[0] != '':
+            if s.get("references") and len(s.get("references")) > 0 and s.get("references")[0] != '':
                 ref_para = doc.add_paragraph()
                 ref_para.paragraph_format.left_indent = Inches(1.0)
                 ref_para.paragraph_format.first_line_indent = -Inches(0.25)
                 ref_para.paragraph_format.line_spacing = 1
-                #ref_para.paragraph_format.space_before = Pt(0)
-                #ref_para.paragraph_format.space_after = Pt(2)
+                # ref_para.paragraph_format.space_before = Pt(0)
+                # ref_para.paragraph_format.space_after = Pt(2)
                 add_tab_stop(ref_para, 1.0)
 
                 ref_bullet = ref_para.add_run("○\t")
@@ -377,12 +423,14 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
                 ref_bullet.font.size = Pt(8)  # Approx lowercase o
                 ref_bullet.font.color.rgb = RGBColor(0, 0, 0)
 
-                ref_text = ref_para.add_run("References: " + "; ".join(s["references"]))
+                ref_text = ref_para.add_run(
+                    "References: " + "; ".join(s["references"]))
                 ref_text.font.name = "Aptos"
                 ref_text.font.size = Pt(10)
 
     doc.save(output_path)
     print(f"\n✅ DOCX summary written to: {output_path}")
+
 
 # =========================
 # Main Test Block
