@@ -251,11 +251,16 @@ def render_editable_groups(template_name, groups, dynamic_values):
                     else:
                         # Show grouped text area for editable content
                         group_text = "\n".join(current_group)
+                        # Calculate height based on content, with minimum height of 68 pixels
+                        num_lines = len(current_group)
+                        # Ensure minimum height of 68px
+                        height = max(68, num_lines * 25 + 25)
+
                         st.text_area(
                             label=f"Edit group {group_index + 1}",
                             value=group_text,
                             key=f"{template_name}_group_{group_index}",
-                            height=len(current_group) * 30 + 10,
+                            height=height,
                             label_visibility="collapsed",
                             on_change=on_text_change,
                             args=(template_name, group_index,)
