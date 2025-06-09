@@ -838,15 +838,26 @@ if selected_config and json_data:
 
                             with results_tab:
                                 try:
-                                    # Add download button for the generated summary
-                                    with open(output_path, "rb") as file:
-                                        st.download_button(
-                                            label="Download Summary",
-                                            data=file,
-                                            file_name=os.path.basename(
-                                                output_path),
-                                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                        )
+                                    # Create a container for the download link
+                                    download_container = st.container()
+
+                                    with download_container:
+                                        if os.path.exists(output_path):
+                                            # Read file and encode to base64
+                                            with open(output_path, "rb") as file:
+                                                file_bytes = file.read()
+                                                import base64
+                                                b64_data = base64.b64encode(
+                                                    file_bytes).decode()
+
+                                                file_name = os.path.basename(
+                                                    output_path)
+                                                mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+                                                # Create HTML download link
+                                                href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #4CAF50; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
+                                                st.markdown(
+                                                    href, unsafe_allow_html=True)
 
                                     # Show prompts used in generation
                                     if prompt_logs:
