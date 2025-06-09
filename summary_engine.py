@@ -208,21 +208,9 @@ def resolve_prompt_fields(prompt_dict, data):
     return resolved
 
 
-def normalize_to_string_list(value):
-    if isinstance(value, str):
-        return [value]
-    elif isinstance(value, dict):
-        return [str(value)]
-    elif isinstance(value, list):
-        return [str(item) if not isinstance(item, str) else item for item in value]
-    else:
-        return [str(value)]  # fallback for other types
-
 # =========================
 # Process a Single Clause Config
 # =========================
-
-
 def process_clause_config(clause_config, data):
     prompt_fields = {}
     references = []
@@ -247,16 +235,11 @@ def process_clause_config(clause_config, data):
         if isinstance(v, list):
             join_type = clause_config.get("join_type", "bullets")
             if join_type == "bullets":
-                print(f"Processing field: {k}")
-                print(f"Value (v): {v}")
-                print(
-                    f"Type of first item: {type(v[0]) if isinstance(v, list) and v else 'N/A'}")
-                prompt_fields[k] = "\n- " + \
-                    "\n- ".join(normalize_to_string_list(v))
+                prompt_fields[k] = "\n- " + "\n- ".join(v)
             elif join_type == "sentences":
-                prompt_fields[k] = " ".join(normalize_to_string_list(v))
+                prompt_fields[k] = " ".join(v)
             else:
-                prompt_fields[k] = "\n".join(normalize_to_string_list(v))
+                prompt_fields[k] = "\n".join(v)
     references.extend(clause_config.get("reference_fields", []))
     references = list(set(references))
     if clause_config.get("use_short_reference", True):
@@ -371,8 +354,7 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
     doc.add_paragraph("")
 
     # Concise / Fulsome grouping and content writing
-    for s_type in ["Fulsome"]:
-        # for s_type in ["Concise", "Fulsome"]:
+    for s_type in ["Concise", "Fulsome"]:
         # Header
         p = doc.add_paragraph()
         run = p.add_run(f"{s_type} Summary")

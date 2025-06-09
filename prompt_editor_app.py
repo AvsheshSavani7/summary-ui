@@ -10,6 +10,7 @@ from io import StringIO
 import tempfile
 from dotenv import load_dotenv
 from summary_engine import process_clause_config, write_docx_summary
+from docx import Document
 
 # Load environment variables
 load_dotenv()
@@ -129,6 +130,29 @@ def move_line(template_name, old_index, new_index):
     st.session_state.line_order[template_name] = new_order
 
 
+def on_text_change(template_name, group_index):
+    """Callback function for text area changes"""
+    key = f"{template_name}_group_{group_index}"
+    if key in st.session_state:
+        edited_text = st.session_state[key]
+        new_lines = [line for line in edited_text.split("\n") if line.strip()]
+
+        if new_lines:  # If there are non-empty lines
+            st.session_state[f"{template_name}_groups"][group_index] = new_lines
+
+            # Update complete template
+            all_lines = []
+            for idx in range(len(st.session_state[f"{template_name}_groups"])):
+                if idx not in st.session_state[f"{template_name}_deleted_groups"]:
+                    all_lines.extend(
+                        st.session_state[f"{template_name}_groups"][idx])
+            st.session_state.edited_templates[template_name] = "\n".join(
+                all_lines)
+        else:  # If all lines were deleted
+            st.session_state[f"{template_name}_groups"][group_index] = []
+            st.experimental_rerun()
+
+
 def render_editable_groups(template_name, groups, dynamic_values):
     """Render all groups with the ability to move them, while maintaining editability status"""
 
@@ -227,24 +251,15 @@ def render_editable_groups(template_name, groups, dynamic_values):
                     else:
                         # Show grouped text area for editable content
                         group_text = "\n".join(current_group)
-                        edited_text = st.text_area(
+                        st.text_area(
                             label=f"Edit group {group_index + 1}",
                             value=group_text,
                             key=f"{template_name}_group_{group_index}",
                             height=len(current_group) * 30 + 10,
-                            label_visibility="collapsed"
+                            label_visibility="collapsed",
+                            on_change=on_text_change,
+                            args=(template_name, group_index,)
                         )
-
-                        # Update group if text changed
-                        if edited_text != group_text:
-                            new_lines = [line for line in edited_text.split(
-                                "\n") if line.strip()]  # Remove empty lines
-                            if new_lines:  # If there are non-empty lines
-                                st.session_state[f"{template_name}_groups"][group_index] = new_lines
-                            else:  # If all lines were deleted
-                                st.session_state[f"{template_name}_groups"][group_index] = [
-                                ]
-                                st.experimental_rerun()
 
                         # Add delete button for the group
                         if st.button("🗑 Delete Group", key=f"delete_group_{group_index}", help="Delete entire group"):
@@ -324,16 +339,17 @@ def read_config_from_s3(config_name):
         # Get the object from S3
         response = s3_client.get_object(
             Bucket=S3_BUCKET,
-            # Changed extension to .json
-            Key=f"clause_configs/{config_name}.json"
+            Key=f"clause_configs/{config_name}.py"
         )
         content = response['Body'].read().decode('utf-8')
 
-        # Parse JSON content directly
-        json_data = json.loads(content)
+        # Create a temporary module namespace
+        namespace = {}
+        exec(content, namespace)
 
-        # Get the first key from the JSON object (e.g., "BOARD_APPROVAL_CLAUSES")
-        config_dict = next(iter(json_data.values()))
+        # Find the first uppercase variable which should be our config dictionary
+        config_dict = next((val for name, val in namespace.items()
+                            if name.isupper() and isinstance(val, dict)), {})
 
         return config_dict
     except Exception as e:
@@ -352,8 +368,8 @@ def get_config_files_from_s3():
         config_files = []
         for obj in response.get('Contents', []):
             filename = os.path.basename(obj['Key'])
-            if filename.endswith('_config.json') and not filename.startswith('__'):
-                config_files.append(filename[:-5])  # Remove .json extension
+            if filename.endswith('_config.py') and not filename.startswith('__'):
+                config_files.append(filename[:-3])  # Remove .py extension
         return sorted(config_files)
     except Exception as e:
         st.error(f"Error listing configs from S3: {str(e)}")
@@ -417,7 +433,7 @@ def save_callback():
 
 
 def save_config_changes_to_s3(config_name, edited_templates):
-    """Save changes back to S3 using JSON format"""
+    """Save changes back to S3 using Python format"""
     try:
         print(f"Attempting to save changes to S3 for {config_name}")
         print(f"Edited templates: {edited_templates}")
@@ -425,14 +441,22 @@ def save_config_changes_to_s3(config_name, edited_templates):
         # First read the existing file from S3
         response = s3_client.get_object(
             Bucket=S3_BUCKET,
-            Key=f"clause_configs/{config_name}.json"
+            Key=f"clause_configs/{config_name}.py"
         )
         content = response['Body'].read().decode('utf-8')
-        json_data = json.loads(content)
 
-        # Get the wrapper key (e.g., "BOARD_APPROVAL_CLAUSES")
-        wrapper_key = next(iter(json_data.keys()))
-        config_dict = json_data[wrapper_key]
+        # Create a temporary module namespace
+        namespace = {}
+        exec(content, namespace)
+
+        # Find the config dictionary and its name
+        config_var_name = next((name for name in namespace if name.isupper(
+        ) and isinstance(namespace[name], dict)), None)
+        if not config_var_name:
+            print("Could not find config dictionary in module")
+            return False
+
+        config_dict = namespace[config_var_name]
 
         # Update only the prompt_template in the dictionary while preserving all other fields
         for key, new_template in edited_templates.items():
@@ -443,15 +467,63 @@ def save_config_changes_to_s3(config_name, edited_templates):
                 print(f"Warning: Key {key} not found in config")
                 return False
 
-        # Reconstruct the JSON with the wrapper
-        json_data[wrapper_key] = config_dict
-        final_content = json.dumps(json_data, indent=2)
+        # Create the new file content
+        file_content = [
+            "# Auto-generated config file",
+            f"{config_var_name} = {{"
+        ]
+
+        # Process each template
+        for i, (key, value) in enumerate(config_dict.items()):
+            # Start template entry
+            file_content.append(f'    "{key}": {{')
+
+            # Process each field in the template
+            field_lines = []
+            for field_key, field_value in value.items():
+                if field_key == 'prompt_template':
+                    # Handle multi-line prompt template
+                    field_lines.append(
+                        f'        "prompt_template": """\n{field_value}\n"""')
+                elif isinstance(field_value, str):
+                    field_lines.append(
+                        f'        "{field_key}": "{field_value}"')
+                elif isinstance(field_value, bool):
+                    # Keep as Python bool (True/False)
+                    field_lines.append(
+                        f'        "{field_key}": {field_value}')
+                elif isinstance(field_value, (int, float)):
+                    field_lines.append(f'        "{field_key}": {field_value}')
+                elif field_value is None:
+                    field_lines.append(f'        "{field_key}": None')
+                elif isinstance(field_value, (list, dict)):
+                    # Use repr for lists and dicts to maintain Python syntax
+                    field_lines.append(
+                        f'        "{field_key}": {repr(field_value)}')
+                else:
+                    field_lines.append(
+                        f'        "{field_key}": {repr(field_value)}')
+
+            # Join fields with commas
+            file_content.append(',\n'.join(field_lines))
+
+            # Close template entry
+            if i < len(config_dict) - 1:
+                file_content.append('    },')
+            else:
+                file_content.append('    }')
+
+        # Close main dictionary
+        file_content.append("}")
+
+        # Join all lines with proper newlines
+        final_content = '\n'.join(file_content)
 
         # Upload the modified content back to S3
         print(f"Uploading modified content to S3")
         s3_client.put_object(
             Bucket=S3_BUCKET,
-            Key=f"clause_configs/{config_name}.json",
+            Key=f"clause_configs/{config_name}.py",
             Body=final_content.encode('utf-8')
         )
 
@@ -501,12 +573,55 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
                     **result
                 })
 
-        # Generate the summary document
-        write_docx_summary(summary_outputs)
-        return True, prompt_logs
+        # Sort summaries by rank before writing
+        summary_outputs_sorted = sorted(
+            summary_outputs, key=lambda x: x.get('summary_rank', 999))
+
+        # Generate unique output path for this run
+        output_path = f"clause_summary_{selected_template}.docx" if selected_template else "clause_summary_output.docx"
+
+        try:
+            # Create a new document
+            doc = Document()
+
+            # Add a simple title
+            doc.add_heading('Merger Agreement Clause Summaries', 0)
+
+            # Add each summary
+            for summary in summary_outputs_sorted:
+                # Add section heading if needed
+                if summary.get("summary_display_section"):
+                    doc.add_heading(
+                        summary["summary_display_section"], level=1)
+
+                # Add the summary text
+                p = doc.add_paragraph()
+                p.add_run("• ").bold = True
+                p.add_run(summary["output"])
+
+                # Add references if any
+                if summary.get("references"):
+                    ref_para = doc.add_paragraph()
+                    ref_para.add_run("References: " +
+                                     "; ".join(summary["references"]))
+                    ref_para.style = 'List Bullet'
+
+            # Save the document
+            doc.save(output_path)
+
+            if os.path.exists(output_path):
+                return True, prompt_logs, output_path
+            else:
+                st.error("Failed to write the document")
+                return False, prompt_logs, None
+
+        except Exception as e:
+            st.error(f"Error writing document: {str(e)}")
+            return False, prompt_logs, None
+
     except Exception as e:
         st.error(f"Error generating summary: {str(e)}")
-        return False, []
+        return False, [], None
 
 
 def group_lines_by_editability(lines, dynamic_values):
@@ -706,95 +821,52 @@ if selected_config and json_data:
             if st.button("Run Summary"):
                 if json_data and selected_config:
                     with st.spinner(f"Generating summary for {st.session_state.selected_template}..."):
-                        success, prompt_logs = run_summary_generation(
+                        success, prompt_logs, output_path = run_summary_generation(
                             json_data, config_dict, st.session_state.selected_template)
-                        if success:
-                            st.success(
-                                f"✅ Summary generated successfully for {st.session_state.selected_template}!")
+
+                        if success and output_path and os.path.exists(output_path):
+                            st.success(f"✅ Summary generated successfully!")
 
                             # Create tabs for Results and Changes
                             results_tab, changes_tab = st.tabs(
                                 ["Summary Results", "Template Changes"])
 
                             with results_tab:
-                                # Add download button for the generated summary
-                                with open("clause_summary_output.docx", "rb") as file:
-                                    st.download_button(
-                                        label="Download Summary",
-                                        data=file,
-                                        file_name=f"clause_summary_{st.session_state.selected_template}.docx",
-                                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                    )
+                                try:
+                                    # Add download button for the generated summary
+                                    with open(output_path, "rb") as file:
+                                        st.download_button(
+                                            label="Download Summary",
+                                            data=file,
+                                            file_name=os.path.basename(
+                                                output_path),
+                                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        )
 
-                                # Show prompts used in generation
-                                if prompt_logs:
-                                    st.markdown(
-                                        '<p class="smaller-font">📋 Prompt Used in Generation</p>', unsafe_allow_html=True)
-                                    # There should be only one log since we're processing one template
-                                    log = prompt_logs[0]
-                                    with st.expander(f"**{log['clause_name']}**"):
+                                    # Show prompts used in generation
+                                    if prompt_logs:
                                         st.markdown(
-                                            '<p class="smallest-font">Template with Dynamic Keys</p>', unsafe_allow_html=True)
-                                        st.code(log['template'])
+                                            '<p class="smaller-font">📋 Prompt Used in Generation</p>', unsafe_allow_html=True)
+                                        log = prompt_logs[0]  # Show first log
+                                        with st.expander(f"**{log['clause_name']}**"):
+                                            st.markdown(
+                                                '<p class="smallest-font">Template with Dynamic Keys</p>', unsafe_allow_html=True)
+                                            st.code(log['template'])
 
-                                        st.markdown(
-                                            '<p class="smallest-font">Final Prompt (with values filled in)</p>', unsafe_allow_html=True)
-                                        st.code(log['final_prompt'])
+                                            st.markdown(
+                                                '<p class="smallest-font">Final Prompt (with values filled in)</p>', unsafe_allow_html=True)
+                                            st.code(log['final_prompt'])
 
-                                        st.markdown(
-                                            '<p class="smallest-font">Generated Output</p>', unsafe_allow_html=True)
-                                        st.code(log['output'])
+                                            st.markdown(
+                                                '<p class="smallest-font">Generated Output</p>', unsafe_allow_html=True)
+                                            st.code(log['output'])
 
-                            with changes_tab:
-                                if st.session_state.selected_template in st.session_state.edited_templates:
-                                    st.markdown(
-                                        '<p class="smaller-font">🔄 Template Changes</p>', unsafe_allow_html=True)
-
-                                    edited_template = st.session_state.edited_templates[
-                                        st.session_state.selected_template]
-                                    original_template = config_dict[st.session_state.selected_template]['prompt_template']
-
-                                    # Show the differences
-                                    removed_lines, added_lines = show_template_diff(
-                                        original_template, edited_template)
-
-                                    if removed_lines:
-                                        st.markdown("**Removed Lines:**")
-                                        st.code('\n'.join(removed_lines),
-                                                language='diff')
-
-                                    if added_lines:
-                                        st.markdown("**Added Lines:**")
-                                        st.code('\n'.join(added_lines),
-                                                language='diff')
-
-                                    # Initialize save data before button click
-                                    init_save(selected_config,
-                                              st.session_state.selected_template,
-                                              edited_template)
-
-                                    # Add confirm button that triggers callback
-                                    st.button(
-                                        f"Confirm Changes for {st.session_state.selected_template}",
-                                        on_click=save_callback,
-                                        key=f"save_button_{st.session_state.selected_template}"
-                                    )
-
-                                    # Show save status if available
-                                    if st.session_state.save_status == "success":
-                                        st.success(
-                                            f"✅ Changes saved successfully to S3!")
-                                        st.session_state.save_status = None
-                                    elif st.session_state.save_status == "error":
-                                        st.error(
-                                            "Failed to save changes. Please try again.")
-                                        st.session_state.save_status = None
-                                else:
-                                    st.info(
-                                        "No changes to review for this template.")
-                else:
-                    st.warning(
-                        "Please select both a JSON file and a config file before running the summary.")
+                                except Exception as e:
+                                    st.error(
+                                        f"Error preparing download: {str(e)}")
+                        else:
+                            st.error(
+                                "Failed to generate or save the summary document.")
         else:
             st.warning(
                 "No prompt template found in this configuration.")

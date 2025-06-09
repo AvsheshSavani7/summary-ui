@@ -6,6 +6,7 @@ from docx.oxml import OxmlElement
 
 SECTION_ORDER = ["Conditions", "Termination", "Consideration", "Other"]
 
+
 def add_tab_stop(paragraph, position_inches):
     pPr = paragraph._element.get_or_add_pPr()
     tabs = pPr.find(qn('w:tabs'))
@@ -17,6 +18,7 @@ def add_tab_stop(paragraph, position_inches):
     tab.set(qn('w:val'), 'left')
     tab.set(qn('w:pos'), str(int(position_inches * 1440)))  # inches to twips
     tabs.append(tab)
+
 
 def write_docx_summary(summaries, output_path="test_output.docx"):
     doc = Document()
@@ -70,7 +72,8 @@ def write_docx_summary(summaries, output_path="test_output.docx"):
                         # Main bullet line (+)
                         bullet_para = doc.add_paragraph()
                         bullet_para.paragraph_format.left_indent = Inches(0.25)
-                        bullet_para.paragraph_format.first_line_indent = -Inches(0.25)
+                        bullet_para.paragraph_format.first_line_indent = - \
+                            Inches(0.25)
                         bullet_para.paragraph_format.space_after = Pt(4)
                         bullet_para.paragraph_format.line_spacing = 1.16
                         add_tab_stop(bullet_para, 0.25)
@@ -89,23 +92,28 @@ def write_docx_summary(summaries, output_path="test_output.docx"):
                         if s.get("references"):
                             ref_para = doc.add_paragraph()
                             ref_para.paragraph_format.left_indent = Inches(1.0)
-                            ref_para.paragraph_format.first_line_indent = -Inches(0.25)
+                            ref_para.paragraph_format.first_line_indent = - \
+                                Inches(0.25)
                             ref_para.paragraph_format.space_after = Pt(6)
                             ref_para.paragraph_format.line_spacing = 1.16
                             add_tab_stop(ref_para, 1.0)
 
-                            ref_bullet = ref_para.add_run("○\t")  # True hollow circle
+                            ref_bullet = ref_para.add_run(
+                                "○\t")  # True hollow circle
                             ref_bullet.font.name = "Aptos"
-                            ref_bullet.font.size = Pt(8)         # Matches 10pt text height
+                            # Matches 10pt text height
+                            ref_bullet.font.size = Pt(8)
                             ref_bullet.font.color.rgb = RGBColor(0, 0, 0)
 
-                            ref_text = ref_para.add_run("References: " + "; ".join(s["references"]))
+                            ref_text = ref_para.add_run(
+                                "References: " + "; ".join(s["references"]))
                             ref_text.font.name = "Aptos"
                             ref_text.font.size = Pt(10)
                             ref_text.font.color.rgb = RGBColor(0, 0, 0)
 
     doc.save(output_path)
     print(f"\n✅ DOCX summary written to: {output_path}")
+
 
 # Sample content
 if __name__ == "__main__":

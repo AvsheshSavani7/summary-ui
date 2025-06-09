@@ -27,15 +27,17 @@ def read_config_from_s3(config_name):
         # Get the object from S3
         response = s3_client.get_object(
             Bucket=S3_BUCKET,
-            Key=f"clause_configs/{config_name}.json"
+            Key=f"clause_configs/{config_name}.py"
         )
         content = response['Body'].read().decode('utf-8')
 
-        # Parse JSON content directly
-        json_data = json.loads(content)
+        # Create a temporary module namespace
+        namespace = {}
+        exec(content, namespace)
 
-        # Get the first key from the JSON object (e.g., "BOARD_APPROVAL_CLAUSES")
-        config_dict = next(iter(json_data.values()))
+        # Find the first uppercase variable which should be our config dictionary
+        config_dict = next((val for name, val in namespace.items()
+                            if name.isupper() and isinstance(val, dict)), {})
 
         return config_dict
     except Exception as e:
@@ -54,8 +56,8 @@ def get_config_files_from_s3():
         config_files = []
         for obj in response.get('Contents', []):
             filename = os.path.basename(obj['Key'])
-            if filename.endswith('_config.json') and not filename.startswith('__'):
-                config_files.append(filename[:-5])  # Remove .json extension
+            if filename.endswith('_config.py') and not filename.startswith('__'):
+                config_files.append(filename[:-3])  # Remove .py extension
         return sorted(config_files)
     except Exception as e:
         print(f"Error listing configs from S3: {str(e)}")
