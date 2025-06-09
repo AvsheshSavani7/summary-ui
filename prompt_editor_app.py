@@ -11,6 +11,17 @@ import tempfile
 from dotenv import load_dotenv
 from summary_engine import process_clause_config, write_docx_summary
 from docx import Document
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -44,15 +55,8 @@ if 'template_lines' not in st.session_state:
 if 'line_order' not in st.session_state:
     st.session_state.line_order = {}
 
-# Initialize session state for saving changes
-if 'pending_save' not in st.session_state:
-    st.session_state.pending_save = None
-if 'save_clicked' not in st.session_state:
-    st.session_state.save_clicked = False
-if 'save_status' not in st.session_state:
-    st.session_state.save_status = None
-if 'save_data' not in st.session_state:
-    st.session_state.save_data = None
+if 'needs_rerun' not in st.session_state:
+    st.session_state.needs_rerun = False
 
 # Add custom CSS for drag and drop functionality
 st.markdown("""
@@ -304,7 +308,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
         # Update the complete template
         if edited_lines:
             st.session_state.edited_templates[template_name] = "\n".join(
-                edited_lines)
+                edited_lines).rstrip()
 
     return edited_lines
 
@@ -401,7 +405,7 @@ def get_config_files():
 
 def init_save(config_name, template_name, template_content):
     """Initialize save operation by storing data in session state"""
-    print(f"Initializing save for template: {template_name}")
+    logger.info(f"Initializing save for template: {template_name}")
     st.session_state.save_data = {
         'config_name': config_name,
         'template_name': template_name,
@@ -412,36 +416,40 @@ def init_save(config_name, template_name, template_content):
 
 def save_callback():
     """Execute save operation using data from session state"""
-    print("Save callback triggered")
+    logger.info("Save callback triggered")
     if st.session_state.save_data and st.session_state.save_data.get('initialized'):
         data = st.session_state.save_data
-        print(f"Processing save for template: {data['template_name']}")
+        logger.info(f"Processing save for template: {data['template_name']}")
 
         try:
             if save_config_changes_to_s3(data['config_name'],
                                          {data['template_name']: data['template_content']}):
-                print(f"Save successful for {data['template_name']}")
+                logger.info(f"Save successful for {data['template_name']}")
                 if data['template_name'] in st.session_state.edited_templates:
                     del st.session_state.edited_templates[data['template_name']]
                 st.session_state.save_status = "success"
             else:
-                print(f"Save failed for {data['template_name']}")
+                logger.error(f"Save failed for {data['template_name']}")
                 st.session_state.save_status = "error"
         except Exception as e:
-            print(f"Error in save callback: {str(e)}")
+            logger.error(f"Error in save callback: {str(e)}")
             st.session_state.save_status = "error"
 
         # Clear save data after processing
         st.session_state.save_data = None
     else:
-        print("No save data found in session state")
+        logger.info("No save data found in session state")
 
 
 def save_config_changes_to_s3(config_name, edited_templates):
     """Save changes back to S3 using Python format"""
     try:
-        print(f"Attempting to save changes to S3 for {config_name}")
-        print(f"Edited templates: {edited_templates}")
+        logger.info(
+            f"Debug: Attempting to save changes to S3 for {config_name}")
+        logger.info(f"Debug: Edited templates: {edited_templates}")
+        logger.info(f"Debug: Using S3 bucket: {S3_BUCKET}")
+        logger.info(
+            f"Debug: AWS credentials present: {bool(os.getenv('AWS_ACCESS_KEY_ID') and os.getenv('AWS_SECRET_ACCESS_KEY'))}")
 
         # First read the existing file from S3
         response = s3_client.get_object(
@@ -449,27 +457,33 @@ def save_config_changes_to_s3(config_name, edited_templates):
             Key=f"clause_configs/{config_name}.py"
         )
         content = response['Body'].read().decode('utf-8')
+        logger.info("Debug: Successfully read existing file from S3")
 
         # Create a temporary module namespace
         namespace = {}
         exec(content, namespace)
+        logger.info("Debug: Successfully executed existing content")
 
         # Find the config dictionary and its name
         config_var_name = next((name for name in namespace if name.isupper(
         ) and isinstance(namespace[name], dict)), None)
         if not config_var_name:
-            print("Could not find config dictionary in module")
+            st.error("Could not find config dictionary in module")
+            logger.error("Could not find config dictionary in module")
             return False
 
+        logger.info(f"Debug: Found config variable name: {config_var_name}")
         config_dict = namespace[config_var_name]
 
         # Update only the prompt_template in the dictionary while preserving all other fields
         for key, new_template in edited_templates.items():
             if key in config_dict:
                 config_dict[key]['prompt_template'] = new_template
-                print(f"Updated template for {key}")
+                logger.info(f"Debug: Updated template for {key}")
             else:
-                print(f"Warning: Key {key} not found in config")
+                error_msg = f"Warning: Key {key} not found in config"
+                st.error(error_msg)
+                logger.error(error_msg)
                 return False
 
         # Create the new file content
@@ -523,21 +537,26 @@ def save_config_changes_to_s3(config_name, edited_templates):
 
         # Join all lines with proper newlines
         final_content = '\n'.join(file_content)
+        logger.info("Debug: Generated new file content")
 
         # Upload the modified content back to S3
-        print(f"Uploading modified content to S3")
-        s3_client.put_object(
-            Bucket=S3_BUCKET,
-            Key=f"clause_configs/{config_name}.py",
-            Body=final_content.encode('utf-8')
-        )
-
-        print(f"Save completed successfully")
-        return True
+        logger.info(f"Debug: Attempting to upload to S3")
+        try:
+            s3_client.put_object(
+                Bucket=S3_BUCKET,
+                Key=f"clause_configs/{config_name}.py",
+                Body=final_content.encode('utf-8')
+            )
+            logger.info(f"Debug: Save completed successfully")
+            return True
+        except Exception as s3_error:
+            logger.error(f"Error uploading to S3: {str(s3_error)}")
+            raise
 
     except Exception as e:
-        print(f"Error saving changes to S3: {str(e)}")
-        st.error(f"Error saving changes to S3: {str(e)}")
+        error_msg = f"Error saving changes to S3: {str(e)}"
+        st.error(error_msg)
+        logger.error(error_msg)
         return False
 
 
@@ -634,6 +653,10 @@ def group_lines_by_editability(lines, dynamic_values):
     groups = []
     current_group = {"editable": True, "lines": [], "indices": []}
 
+    # First, clean up the lines by removing trailing empty lines
+    while lines and not lines[-1].strip():
+        lines.pop()
+
     for i, line in enumerate(lines):
         has_dynamic = any(dyn in line for dyn in dynamic_values)
         is_editable = not has_dynamic
@@ -658,8 +681,8 @@ def group_lines_by_editability(lines, dynamic_values):
             # Start a new editable group
             current_group = {"editable": True, "lines": [], "indices": []}
 
-    # Add the last group if it has any lines
-    if current_group["lines"]:
+    # Add the last group only if it has non-empty lines
+    if current_group["lines"] and any(line.strip() for line in current_group["lines"]):
         groups.append(current_group)
 
     return groups
@@ -693,6 +716,44 @@ def handle_save_confirmation(template_name, edited_template):
         'template_name': template_name,
         'edited_template': edited_template
     }
+
+
+def on_save_click():
+    """Callback for save button click"""
+    logger.info("Save button clicked")
+    try:
+        logger.info("Attempting save operation")
+
+        # Store save data
+        save_data = {
+            'config': selected_config,
+            'template': st.session_state.selected_template,
+            'content': st.session_state.edited_templates[st.session_state.selected_template]
+        }
+        logger.info(f"Using save data: {save_data}")
+
+        # Attempt to save
+        success = save_config_changes_to_s3(
+            save_data['config'],
+            {save_data['template']: save_data['content']}
+        )
+
+        if success:
+            logger.info("Save completed successfully")
+            # Remove from edited templates
+            del st.session_state.edited_templates[save_data['template']]
+            logger.info("Session state cleared after successful save")
+            # Set flag for rerun instead of calling rerun directly
+            st.session_state.needs_rerun = True
+        else:
+            logger.error("Save operation failed")
+            st.error("❌ Failed to save changes to S3")
+    except Exception as e:
+        logger.error(f"Error during save operation: {str(e)}")
+        st.error(f"❌ Error saving to S3: {str(e)}")
+        import traceback
+        logger.error(f"Full error traceback: {traceback.format_exc()}")
+        st.code(traceback.format_exc())
 
 
 # Custom CSS for smaller headers
@@ -820,7 +881,16 @@ if selected_config and json_data:
             # Show the complete edited template
             st.markdown(
                 '<p class="smallest-font">Complete Template:</p>', unsafe_allow_html=True)
-            st.code("\n".join(edited_lines))
+            # Convert whitespace to visible characters and wrap in <pre> tag for preserving formatting
+            template_with_whitespace = "\n".join(
+                edited_lines).rstrip()  # Remove trailing whitespace
+
+            st.code(template_with_whitespace, language="plaintext")
+
+            # Update the complete template without trailing newlines
+            if edited_lines:
+                st.session_state.edited_templates[st.session_state.selected_template] = "\n".join(
+                    edited_lines).rstrip()
 
             # Add run button
             if st.button("Run Summary"):
@@ -855,7 +925,7 @@ if selected_config and json_data:
                                                 mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
                                                 # Create HTML download link
-                                                href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #4CAF50; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
+                                                href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #a3a3a2; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
                                                 st.markdown(
                                                     href, unsafe_allow_html=True)
 
@@ -876,9 +946,38 @@ if selected_config and json_data:
                                 except Exception as e:
                                     st.error(
                                         f"Error preparing download: {str(e)}")
-                        else:
-                            st.error(
-                                "Failed to generate or save the summary document.")
+
+                            with changes_tab:
+                                logger.info("Entering changes_tab section")
+
+                                # Check if we need to rerun from previous save
+                                if st.session_state.needs_rerun:
+                                    st.session_state.needs_rerun = False
+                                    st.rerun()
+
+                                if st.session_state.selected_template in st.session_state.edited_templates:
+                                    logger.info(
+                                        f"Found template {st.session_state.selected_template} in edited_templates")
+                                    original = config_dict[st.session_state.selected_template]["prompt_template"]
+                                    edited = st.session_state.edited_templates[
+                                        st.session_state.selected_template]
+
+                                    st.markdown("### Template Comparison")
+
+                                    st.markdown("**Original Template:**")
+                                    st.text_area(
+                                        "Original", value=original, height=300, disabled=True, label_visibility="collapsed")
+
+                                    st.markdown("**Modified Template:**")
+                                    st.text_area(
+                                        "Modified", value=edited, height=300, disabled=True, label_visibility="collapsed")
+
+                                    # Create save button
+                                    st.button(
+                                        "💾 Save Changes", key="save_button", on_click=on_save_click)
+                                else:
+                                    logger.info(
+                                        f"Template {st.session_state.selected_template} not found in edited_templates")
         else:
             st.warning(
                 "No prompt template found in this configuration.")
