@@ -150,7 +150,7 @@ def on_text_change(template_name, group_index):
                 all_lines)
         else:  # If all lines were deleted
             st.session_state[f"{template_name}_groups"][group_index] = []
-            st.experimental_rerun()
+            st.rerun()
 
 
 def render_editable_groups(template_name, groups, dynamic_values):
@@ -213,7 +213,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                                 st.session_state[f"{template_name}_groups_editable"][next_index] = \
                                 st.session_state[f"{template_name}_groups_editable"][next_index], \
                                 st.session_state[f"{template_name}_groups_editable"][group_index]
-                            st.experimental_rerun()
+                            st.rerun()
 
                 # Move down button
                 if group_index < len(st.session_state[f"{template_name}_groups"]) - 1:
@@ -235,7 +235,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                                 st.session_state[f"{template_name}_groups_editable"][next_index] = \
                                 st.session_state[f"{template_name}_groups_editable"][next_index], \
                                 st.session_state[f"{template_name}_groups_editable"][group_index]
-                            st.experimental_rerun()
+                            st.rerun()
 
             with content_col:
                 if is_editable:
@@ -247,7 +247,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                         if st.button("+ Add New Line", key=f"add_line_{group_index}"):
                             st.session_state[f"{template_name}_groups"][group_index] = [
                                 "New line"]
-                            st.experimental_rerun()
+                            st.rerun()
                     else:
                         # Show grouped text area for editable content
                         group_text = "\n".join(current_group)
@@ -270,7 +270,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                         if st.button("🗑 Delete Group", key=f"delete_group_{group_index}", help="Delete entire group"):
                             st.session_state[f"{template_name}_groups"][group_index] = [
                             ]
-                            st.experimental_rerun()
+                            st.rerun()
                 else:
                     # Handle non-editable line as a parent element
                     if current_group:  # Only process if group is not empty
@@ -294,7 +294,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                                 groups_to_remove.add(group_index)
                                 st.session_state[f"{template_name}_deleted_groups"].add(
                                     group_index)
-                                st.experimental_rerun()
+                                st.rerun()
 
             # Add lines from current group if not marked for removal
             if group_index not in groups_to_remove and group_index not in st.session_state[f"{template_name}_deleted_groups"]:
@@ -834,7 +834,7 @@ if selected_config and json_data:
 
                             # Create tabs for Results and Changes
                             results_tab, changes_tab = st.tabs(
-                                ["Summary Results", "Template Changes"])
+                                ["Summary Results", "Prompt Changes"])
 
                             with results_tab:
                                 try:
@@ -855,11 +855,7 @@ if selected_config and json_data:
                                         log = prompt_logs[0]  # Show first log
                                         with st.expander(f"**{log['clause_name']}**"):
                                             st.markdown(
-                                                '<p class="smallest-font">Template with Dynamic Keys</p>', unsafe_allow_html=True)
-                                            st.code(log['template'])
-
-                                            st.markdown(
-                                                '<p class="smallest-font">Final Prompt (with values filled in)</p>', unsafe_allow_html=True)
+                                                '<p class="smallest-font">Final Prompt</p>', unsafe_allow_html=True)
                                             st.code(log['final_prompt'])
 
                                             st.markdown(
