@@ -832,7 +832,7 @@ st.markdown("""
         margin-bottom: 0.5rem !important;
     }
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 3rem !important;
         padding-bottom: 2rem !important;
     }
              
