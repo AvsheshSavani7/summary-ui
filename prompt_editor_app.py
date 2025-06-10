@@ -1064,7 +1064,7 @@ if st.session_state.selected_template:
         font-family: sans-serif;
         transition: background-color 0.3s ease;
     " onmouseover="this.style.backgroundColor='#1a436d'" onmouseout="this.style.backgroundColor='#26619c'">
-        📥 Download Summary
+        📥 Download .docx
     </a>
 """
 
