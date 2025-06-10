@@ -174,42 +174,10 @@ div.stButton > button {
     height: auto !important;
     line-height: 1 !important;
 }
-            /* Move column styling */
-            .st-emotion-cache-0 {
-            height: 100% !important;
-            }
-
-            .st-emotion-cache-1wmy9hl  {
-            height: 100% !important;
-            }
-
-            .st-emotion-cache-1lm8foz  {
-            height: 100% !important;
-            justify-content: space-around !important;
-            }
-
-            /* Delete button styling */
-            .st-emotion-cache-sdssu1 {
-            height: 100% !important;
-            justify-content: center !important;
-                        }
-            
-            .st-emotion-cache-14upd0g {
-            height: 100% !important;
-            justify-content: space-between !important;
-            }
-
-            .st-emotion-cache-1ddg7wz {
-            height: 100% !important;
-            justify-content: space-between !important;
-            }
-
-            .st-emotion-cache-1i01o87 {
-            gap: 0rem !important;
-            }
+           
            
 /* Hide sidebar header */
-[data-testid="stSidebarNav"] {
+[data-testid="stSidebarHeader"] {
     display: none !important;
 }
 
@@ -218,6 +186,12 @@ div.stButton > button {
    margin-top: 0.2rem !important;
    margin-bottom: 0.2rem !important;
 }
+/* Sidebar gap */
+[data-testid="stVerticalBlock"] {
+ gap: 0rem !important;
+}
+
+
 </style>
         
 """, unsafe_allow_html=True)
@@ -861,30 +835,7 @@ st.markdown("""
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
     }
-                /* right side verticle container -Top padding for elements */
-                .st-emotion-cache-0 {
-                padding-top: 6px !important;
-                }
-
-                /* Inside editable groups */
-                .st-emotion-cache-1v2mx50  {
-                gap: 0rem !important;
-                }
-            
-            /*Side bar gap*/
-    .st-emotion-cache-9vq585 {
-            gap: 0rem !important;
-            }
-
-            .e1nzilvr5 hr{
-            margin-top: 0.2rem !important;
-            margin-bottom: 0.2rem !important;
-            }
-
-            .st-emotion-cache-v1b0rl{
-            min-height: 28px !important;
-            padding:0.1rem 0.4rem !important;
-            }
+             
     </style>
 """, unsafe_allow_html=True)
 
