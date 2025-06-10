@@ -86,25 +86,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-def initialize_template_lines(template_name, lines):
-    """Initialize or update template lines in session state"""
-    if template_name not in st.session_state.template_lines:
-        st.session_state.template_lines[template_name] = lines
-        st.session_state.line_order[template_name] = list(range(len(lines)))
-
-
-def add_new_line(template_name, index):
-    """Add a new line after the specified index"""
-    lines = st.session_state.template_lines[template_name]
-    order = st.session_state.line_order[template_name]
-
-    # Insert new line
-    lines.insert(index + 1, "")
-    # Update order
-    new_order = list(range(len(lines)))
-    st.session_state.line_order[template_name] = new_order
-
-
 def delete_line(template_name, index):
     """Delete line at specified index"""
     lines = st.session_state.template_lines[template_name]
@@ -115,23 +96,6 @@ def delete_line(template_name, index):
         # Update order
         new_order = list(range(len(lines)))
         st.session_state.line_order[template_name] = new_order
-
-
-def move_line(template_name, old_index, new_index):
-    """Move line from old_index to new_index"""
-    lines = st.session_state.template_lines[template_name]
-    order = st.session_state.line_order[template_name]
-
-    # Ensure indices are within bounds
-    new_index = max(0, min(new_index, len(lines) - 1))
-
-    # Move the line
-    line = lines.pop(old_index)
-    lines.insert(new_index, line)
-
-    # Update order
-    new_order = list(range(len(lines)))
-    st.session_state.line_order[template_name] = new_order
 
 
 def on_text_change(template_name, group_index):
@@ -313,13 +277,6 @@ def render_editable_groups(template_name, groups, dynamic_values):
     return edited_lines
 
 
-def generate_unique_key(key, line, index):
-    """Generate a unique key for each text input widget"""
-    # Combine all components and hash them to ensure uniqueness
-    combined = f"{key}_{index}_{line}"
-    return hashlib.md5(combined.encode()).hexdigest()
-
-
 def load_json_file(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -401,44 +358,6 @@ def get_config_files():
         if file.endswith("_config.json") and not file.startswith("__"):
             config_files.append(file[:-5])  # Remove .json extension
     return sorted(config_files)
-
-
-def init_save(config_name, template_name, template_content):
-    """Initialize save operation by storing data in session state"""
-    logger.info(f"Initializing save for template: {template_name}")
-    st.session_state.save_data = {
-        'config_name': config_name,
-        'template_name': template_name,
-        'template_content': template_content,
-        'initialized': True
-    }
-
-
-def save_callback():
-    """Execute save operation using data from session state"""
-    logger.info("Save callback triggered")
-    if st.session_state.save_data and st.session_state.save_data.get('initialized'):
-        data = st.session_state.save_data
-        logger.info(f"Processing save for template: {data['template_name']}")
-
-        try:
-            if save_config_changes_to_s3(data['config_name'],
-                                         {data['template_name']: data['template_content']}):
-                logger.info(f"Save successful for {data['template_name']}")
-                if data['template_name'] in st.session_state.edited_templates:
-                    del st.session_state.edited_templates[data['template_name']]
-                st.session_state.save_status = "success"
-            else:
-                logger.error(f"Save failed for {data['template_name']}")
-                st.session_state.save_status = "error"
-        except Exception as e:
-            logger.error(f"Error in save callback: {str(e)}")
-            st.session_state.save_status = "error"
-
-        # Clear save data after processing
-        st.session_state.save_data = None
-    else:
-        logger.info("No save data found in session state")
 
 
 def save_config_changes_to_s3(config_name, edited_templates):
@@ -686,36 +605,6 @@ def group_lines_by_editability(lines, dynamic_values):
         groups.append(current_group)
 
     return groups
-
-
-def show_template_diff(original_template, edited_template):
-    """Show differences between original and edited templates"""
-    import difflib
-
-    original_lines = original_template.splitlines()
-    edited_lines = edited_template.splitlines()
-
-    differ = difflib.Differ()
-    diff = list(differ.compare(original_lines, edited_lines))
-
-    removed_lines = []
-    added_lines = []
-
-    for line in diff:
-        if line.startswith('- '):
-            removed_lines.append(line[2:])
-        elif line.startswith('+ '):
-            added_lines.append(line[2:])
-
-    return removed_lines, added_lines
-
-
-def handle_save_confirmation(template_name, edited_template):
-    """Handle the save confirmation and update session state"""
-    st.session_state.pending_save = {
-        'template_name': template_name,
-        'edited_template': edited_template
-    }
 
 
 def on_save_click():
