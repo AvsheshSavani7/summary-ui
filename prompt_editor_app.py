@@ -208,6 +208,16 @@ div.stButton > button {
             gap: 0rem !important;
             }
            
+/* Hide sidebar header */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+
+/* Style hr inside markdown container */
+[data-testid="stMarkdownContainer"] hr {
+   margin-top: 0.2rem !important;
+   margin-bottom: 0.2rem !important;
+}
 </style>
         
 """, unsafe_allow_html=True)
