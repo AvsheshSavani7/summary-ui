@@ -127,13 +127,87 @@ div.stButton > button {
 }
 /* Reduce code block padding */
 .stCodeBlock {
-    padding: 0.2rem !important;
+    padding: 0rem !important;
 }
             
 /* remove gap between elements */
 .st-emotion-cache-q5aj5z {
    gap: 0.1rem !important;
 }
+
+/* Styles for editable group header */
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.1rem;
+}
+
+.group-header-text {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.delete-group-btn {
+    padding: 0.2rem 0.5rem !important;
+    height: auto !important;
+    min-height: unset !important;
+    line-height: 1 !important;
+}
+
+/* Move column styling */
+[data-testid="column"]:first-child {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 68px !important;
+}
+
+/* Adjust button spacing in move column */
+[data-testid="column"]:first-child .stButton {
+    margin: 0 !important;
+}
+
+[data-testid="column"]:first-child button {
+    padding: 0.2rem 0.5rem !important;
+    min-height: unset !important;
+    height: auto !important;
+    line-height: 1 !important;
+}
+            /* Move column styling */
+            .st-emotion-cache-0 {
+            height: 100% !important;
+            }
+
+            .st-emotion-cache-1wmy9hl  {
+            height: 100% !important;
+            }
+
+            .st-emotion-cache-1lm8foz  {
+            height: 100% !important;
+            justify-content: space-around !important;
+            }
+
+            /* Delete button styling */
+            .st-emotion-cache-sdssu1 {
+            height: 100% !important;
+            justify-content: center !important;
+                        }
+            
+            .st-emotion-cache-14upd0g {
+            height: 100% !important;
+            justify-content: space-between !important;
+            }
+
+            .st-emotion-cache-1ddg7wz {
+            height: 100% !important;
+            justify-content: space-between !important;
+            }
+
+            .st-emotion-cache-1i01o87 {
+            gap: 0rem !important;
+            }
+           
 </style>
         
 """, unsafe_allow_html=True)
@@ -211,7 +285,7 @@ def render_editable_groups(template_name, groups, dynamic_values):
                 continue
 
             # Create columns for group controls and content
-            move_col, content_col = st.columns([0.1, 0.9])
+            move_col, content_col = st.columns([0.05, 0.95])
 
             with move_col:
                 # Move up button
@@ -260,8 +334,15 @@ def render_editable_groups(template_name, groups, dynamic_values):
 
             with content_col:
                 if is_editable:
+                    # Create a header container with flexbox layout
                     st.markdown(
-                        f"**Editable Group {sum(1 for x in st.session_state[f'{template_name}_groups_editable'][:group_index] if x) + 1}:**")
+                        f"""
+                        <div class="group-header">
+                            <p class="smaller-font group-header-text">Editable Group {sum(1 for x in st.session_state[f'{template_name}_groups_editable'][:group_index] if x) + 1}:</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
                     # If group is empty, show add line button
                     if not current_group:
@@ -277,25 +358,28 @@ def render_editable_groups(template_name, groups, dynamic_values):
                         # Ensure minimum height of 68px
                         height = max(68, num_lines * 25 + 25)
 
-                        st.text_area(
-                            label=f"Edit group {group_index + 1}",
-                            value=group_text,
-                            key=f"{template_name}_group_{group_index}",
-                            height=height,
-                            label_visibility="collapsed",
-                            on_change=on_text_change,
-                            args=(template_name, group_index,)
-                        )
+                        col1, col2 = st.columns([0.95, 0.05])
+                        with col1:
+                            st.text_area(
+                                label=f"Edit group {group_index + 1}",
+                                value=group_text,
+                                key=f"{template_name}_group_{group_index}",
+                                height=height,
+                                label_visibility="collapsed",
+                                on_change=on_text_change,
+                                args=(template_name, group_index,)
+                            )
 
-                        # Add delete button for the group
-                        if st.button("🗑 Delete Group", key=f"delete_group_{group_index}", help="Delete entire group"):
-                            st.session_state[f"{template_name}_groups"][group_index] = [
-                            ]
-                            st.rerun()
+                        with col2:
+                            # Add delete button for the group
+                            if st.button("🗑", key=f"delete_group_{group_index}", help="Delete entire group", type="secondary"):
+                                st.session_state[f"{template_name}_groups"][group_index] = [
+                                ]
+                                st.rerun()
                 else:
                     # Handle non-editable line as a parent element
                     if current_group:  # Only process if group is not empty
-                        content_col, delete_col = st.columns([0.9, 0.1])
+                        content_col, delete_col = st.columns([0.95, 0.05])
 
                         with content_col:
                             # Show the line with any dynamic content highlighted
@@ -715,9 +799,16 @@ st.markdown("""
         margin-bottom: 0px !important;
         font-weight: bold;
     }
+            
+    .pt-20{
+        padding-top: 20px !important;
+    }
+    .pb-10{
+        padding-bottom: 10px !important;
+    }
     .smaller-font {
         font-size: 16px !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 12px !important;
         font-weight: bold;
     }
     .smallest-font {
@@ -748,8 +839,8 @@ st.markdown("""
     }
     /* Reduce padding in text areas */
     .stTextArea {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.1rem !important;
+        padding-bottom: 0.1rem !important;
     }
     /* Reduce margins between elements */
     div.stButton > button {
@@ -769,7 +860,21 @@ st.markdown("""
                 .st-emotion-cache-1v2mx50  {
                 gap: 0rem !important;
                 }
-   
+            
+            /*Side bar gap*/
+    .st-emotion-cache-9vq585 {
+            gap: 0rem !important;
+            }
+
+            .st-emotion-cache-1l23ect hr{
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
+            }
+
+            .st-emotion-cache-v1b0rl{
+            min-height: 28px !important;
+            padding:0.1rem 0.4rem !important;
+            }
     </style>
 """, unsafe_allow_html=True)
 
@@ -783,7 +888,7 @@ with st.sidebar:
     st.markdown("---")  # Add a divider line
 
     # JSON File Selection (Step 1)
-    st.markdown('<p class="smaller-font"><u>1. Select JSON Source</u></p>',
+    st.markdown('<p class="smaller-font pt-20"><u>1. Select JSON Source</u></p>',
                 unsafe_allow_html=True)
     json_source = st.radio("Choose JSON source:", [
                            "Upload JSON", "Select Existing JSON"])
@@ -843,7 +948,7 @@ if st.session_state.selected_template:
 
         # Show the complete edited template
         st.markdown(
-            '<p class="smallest-font">Complete Template:</p>', unsafe_allow_html=True)
+            '<p class="smallest-font pb-10">Complete Template:</p>', unsafe_allow_html=True)
         # Convert whitespace to visible characters and wrap in <pre> tag for preserving formatting
         template_with_whitespace = "\n".join(
             edited_lines).rstrip()  # Remove trailing whitespace
