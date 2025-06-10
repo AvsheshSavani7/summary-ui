@@ -866,7 +866,7 @@ st.markdown("""
             gap: 0rem !important;
             }
 
-            .st-emotion-cache-1l23ect hr{
+            .e1nzilvr5 hr{
             margin-top: 0.2rem !important;
             margin-bottom: 0.2rem !important;
             }
