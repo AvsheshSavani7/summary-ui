@@ -7,7 +7,7 @@ import json
 import boto3
 from dotenv import load_dotenv
 from summary_engine import process_clause_config, write_docx_summary
-
+from summary_engine import RUN_CONCISE_SUMMARIES, RUN_FULSOME_SUMMARIES
 # Load environment variables
 load_dotenv()
 
@@ -95,19 +95,45 @@ with open(json_filename, "r", encoding="utf-8") as f:
 
 print("Loaded clause configs:", list(CLAUSE_CONFIG.keys()))
 
+
+def parse_rank(rank):
+
+    return [int(part) for part in str(rank).split(".")]
+
+
 # =========================
 # Run Clause Evaluations
 # =========================
 summary_outputs = []
 
 for clause_name, clause_config in CLAUSE_CONFIG.items():
+
+    summary_type = clause_config.get("summary_type", "Concise")
+
+    # 🚨 ADD THIS LINE TO SKIP UNKNOWN OR DISABLED TYPES
+
+    if summary_type not in ("Concise", "Fulsome"):
+
+        print(
+            f"Skipping {clause_name} — summary_type '{summary_type}' not recognized.")
+
+        continue
+
+    if summary_type == "Concise" and not RUN_CONCISE_SUMMARIES:
+
+        continue
+
+    if summary_type == "Fulsome" and not RUN_FULSOME_SUMMARIES:
+
+        continue
+
     print(f"\n→ Evaluating: {clause_name}")
     result = process_clause_config(clause_config, EXAMPLE_SCHEMA_DATA)
 
     if result["output"] and result["output"] != "No output generated.":
         # Skip concise summaries where view_prompt is False
         if (
-            result.get("summary_type", "").lower() == "concise"
+            result.get("summary_type", "") == "Concise"
             and clause_config.get("view_prompt", True) is False
         ):
             print(f"Skipping {clause_name} (concise, view_prompt=False)")
@@ -133,8 +159,15 @@ for clause_name, clause_config in CLAUSE_CONFIG.items():
 # =========================
 # Write to DOCX
 # =========================
+# summary_outputs_sorted = sorted(summary_outputs, key=lambda x: x['summary_rank'])
+
 summary_outputs_sorted = sorted(
-    summary_outputs, key=lambda x: x['summary_rank'])
-write_docx_summary(summary_outputs_sorted,
-                   json_filename.replace(".json", "_summary.docx"))
+    summary_outputs, key=lambda x: parse_rank(x['summary_rank']))
+
+write_docx_summary(
+    summary_outputs_sorted,
+    json_filename.replace(".json", "_summary.docx"),
+    RUN_CONCISE_SUMMARIES,
+    RUN_FULSOME_SUMMARIES
+)
 print("\n✅ DOCX summary written.")

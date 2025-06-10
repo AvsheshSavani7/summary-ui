@@ -12,10 +12,15 @@ from collections import defaultdict
 import datetime
 import dateutil.parser
 
+# summary_engine.py
+RUN_CONCISE_SUMMARIES = True
+RUN_FULSOME_SUMMARIES = True
 
 # =========================
 # LLM Setup
 # =========================
+
+
 def load_api_key():
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
@@ -25,6 +30,10 @@ def load_api_key():
 
 
 openai.api_key = load_api_key()
+
+
+def get_summary_mode_toggles():
+    return RUN_CONCISE_SUMMARIES, RUN_FULSOME_SUMMARIES
 
 
 def call_llm(prompt_text, model="gpt-4", temperature=0):
@@ -112,7 +121,10 @@ def evaluate_condition_branch(condition, data):
         result = bool(value)
 
     elif condition["type"] == "enum":
-        value_normalized = (value or "").strip()
+        if isinstance(value, list):
+            value_normalized = ", ".join(str(v) for v in value).strip()
+        else:
+            value_normalized = (value or "").strip()
         enum_cases = condition.get("enum_cases", {})
         branch = enum_cases.get(value_normalized, condition.get("default", {}))
         if branch:
@@ -208,15 +220,28 @@ def resolve_prompt_fields(prompt_dict, data):
     return resolved
 
 
+def normalize_to_string_list(value):
+    if isinstance(value, str):
+        return [value]
+    elif isinstance(value, dict):
+        return [str(value)]
+    elif isinstance(value, list):
+        return [str(item) if not isinstance(item, str) else item for item in value]
+    else:
+        return [str(value)]  # fallback for other types
+
 # =========================
 # Process a Single Clause Config
 # =========================
-def process_clause_config(clause_config, data):
+
+
+def process_clause_config(clause_config, schema_data):
+
     prompt_fields = {}
     references = []
     final_text_output = None
     for cond in clause_config.get("conditions", []):
-        result = evaluate_condition_branch(cond, data)
+        result = evaluate_condition_branch(cond, schema_data)
         if "add_to_prompt" in result:
             for k, v in result["add_to_prompt"].items():
                 if k not in prompt_fields:
@@ -235,21 +260,26 @@ def process_clause_config(clause_config, data):
         if isinstance(v, list):
             join_type = clause_config.get("join_type", "bullets")
             if join_type == "bullets":
-                prompt_fields[k] = "\n- " + "\n- ".join(v)
+                print(f"Processing field: {k}")
+                print(f"Value (v): {v}")
+                print(
+                    f"Type of first item: {type(v[0]) if isinstance(v, list) and v else 'N/A'}")
+                prompt_fields[k] = "\n- " + \
+                    "\n- ".join(normalize_to_string_list(v))
             elif join_type == "sentences":
-                prompt_fields[k] = " ".join(v)
+                prompt_fields[k] = " ".join(normalize_to_string_list(v))
             else:
-                prompt_fields[k] = "\n".join(v)
+                prompt_fields[k] = "\n".join(normalize_to_string_list(v))
     references.extend(clause_config.get("reference_fields", []))
     references = list(set(references))
     if clause_config.get("use_short_reference", True):
         short_refs = extract_short_reference(
-            references, data, fallback_to_section=True)
+            references, schema_data, fallback_to_section=True)
     else:
         short_refs = [
-            get_nested_value(data, path)
+            get_nested_value(schema_data, path)
             for path in references
-            if get_nested_value(data, path)
+            if get_nested_value(schema_data, path)
         ]
     # If prompt can be built
     if prompt_fields and "prompt_template" in clause_config:
@@ -328,7 +358,8 @@ def add_tab_stop(paragraph, position_inches):
     tabs.append(tab)
 
 
-def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
+def write_docx_summary(summaries, output_path, RUN_CONCISE_SUMMARIES, RUN_FULSOME_SUMMARIES):
+
     doc = Document()
 
     # Set default font
@@ -354,7 +385,13 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
     doc.add_paragraph("")
 
     # Concise / Fulsome grouping and content writing
-    for s_type in ["Concise", "Fulsome"]:
+    enabled_summary_types = []
+    if RUN_CONCISE_SUMMARIES:
+        enabled_summary_types.append("Concise")
+    if RUN_FULSOME_SUMMARIES:
+        enabled_summary_types.append("Fulsome")
+
+    for s_type in enabled_summary_types:
         # Header
         p = doc.add_paragraph()
         run = p.add_run(f"{s_type} Summary")
@@ -367,13 +404,10 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
 
         already_print = []
         for s in [summary for summary in summaries if summary.get("summary_type") == s_type]:
-            # Main bullet line (+)
             if s.get("summary_display_section") not in already_print:
                 doc.add_heading(s.get("summary_display_section"), level=2)
                 already_print.append(s.get("summary_display_section"))
 
-            # if s.get("summary_display_sub_section").lower() != "" :
-            #     doc.add_heading(s.get("summary_display_sub_section"), level=3)
             bullet_para = doc.add_paragraph()
             bullet_para.paragraph_format.left_indent = Inches(0.25)
             bullet_para.paragraph_format.first_line_indent = -Inches(0.25)
@@ -386,23 +420,21 @@ def write_docx_summary(summaries, output_path="clause_summary_output.docx"):
             bullet_run.font.name = "Aptos"
             bullet_run.font.size = Pt(10.5)
 
-            text_run = bullet_para.add_run(s["output"])
+            clean_output = s["output"].strip().strip('"').strip("'")
+            text_run = bullet_para.add_run(clean_output)
             text_run.font.name = "Aptos"
             text_run.font.size = Pt(10.5)
 
-            # Reference line (○)
-            if s.get("references") and len(s.get("references")) > 0 and s.get("references")[0] != '':
+            if s.get("references") and s["references"][0] != '':
                 ref_para = doc.add_paragraph()
                 ref_para.paragraph_format.left_indent = Inches(1.0)
                 ref_para.paragraph_format.first_line_indent = -Inches(0.25)
                 ref_para.paragraph_format.line_spacing = 1
-                # ref_para.paragraph_format.space_before = Pt(0)
-                # ref_para.paragraph_format.space_after = Pt(2)
                 add_tab_stop(ref_para, 1.0)
 
                 ref_bullet = ref_para.add_run("○\t")
                 ref_bullet.font.name = "Aptos"
-                ref_bullet.font.size = Pt(8)  # Approx lowercase o
+                ref_bullet.font.size = Pt(8)
                 ref_bullet.font.color.rgb = RGBColor(0, 0, 0)
 
                 ref_text = ref_para.add_run(
@@ -432,6 +464,10 @@ if __name__ == "__main__":
     print(f"📝 Writing {len(summary_outputs)} summaries to DOCX")
 
     for clause_name, clause_config in CLAUSE_CONFIG.items():
+        # Assert OFF clauses were filtered upstream (or flag if not)
+        assert clause_config.get(
+            "summary_type") != "OFF", f"OFF clause was not skipped: {clause_name}"
+
         print(f"→ Evaluating: {clause_name}")
         result = process_clause_config(clause_config, EXAMPLE_SCHEMA_DATA)
         print(f"→ Output preview: {result['output'][:100]}")

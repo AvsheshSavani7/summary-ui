@@ -205,6 +205,44 @@ div.stButton > button {
    height: 100% !important;
    justify-content: space-between !important;
 }
+            
+[data-testid="baseButton-secondary"] {
+   padding: 0.1rem 0.4rem !important;
+   min-height:28px !important;
+   line-height: 1.2 !important;
+}
+
+/* Custom styles for Run Summary and Save Changes buttons */
+div[data-testid="stButton"] button[kind="primary"] {
+    background-color: #a3a3a2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+div[data-testid="stButton"] button[kind="primary"]:hover {
+    background-color: #8a8a89;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Save Changes button specific style - now matches the same gray theme */
+div[data-testid="stButton"] button:contains("💾") {
+    background-color: #a3a3a2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+div[data-testid="stButton"] button:contains("💾"):hover {
+    background-color: #8a8a89;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
 
 </style>
         
@@ -811,7 +849,11 @@ st.markdown("""
     }
     .smallest-font {
         font-size: 14px !important;
-        margin-bottom: 0px !important;
+        margin-bottom: 10px !important;
+    }
+            
+    .bold {
+        font-weight: bold !important;
     }
     /* Reduce padding in Streamlit elements */
     .st-emotion-cache-z5fcl4 {
@@ -848,6 +890,38 @@ st.markdown("""
     .block-container {
         padding-top: 3rem !important;
         padding-bottom: 2rem !important;
+    }
+
+    /* Custom styles for Run Summary and Save Changes buttons */
+    div[data-testid="stButton"] button[kind="primary"] {
+        background-color: #26619c;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-weight: 600;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    div[data-testid="stButton"] button[kind="primary"]:hover {
+        background-color: #1a436d;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Save Changes button specific style - now matches the same gray theme */
+    div[data-testid="stButton"] button:contains("💾") {
+        background-color: #26619c;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-weight: 600;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    div[data-testid="stButton"] button:contains("💾"):hover {
+        background-color: #1a436d;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
              
     </style>
@@ -898,9 +972,19 @@ with st.sidebar:
         config_dict = read_config_from_s3(selected_config)
         st.markdown('<p class="smaller-font"><u>3. Select Template to Edit</u></p>',
                     unsafe_allow_html=True)
-        template_options = list(config_dict.keys())
-        st.session_state.selected_template = st.selectbox(
+        # Create template options with summary_type prefix
+        template_options = []
+        for key, value in config_dict.items():
+            summary_type = value.get("summary_type", "Un")
+            summary_type_short = summary_type[:3]  # Get first 3 characters
+            template_options.append(f"[{summary_type_short}] {key}")
+
+        selected_option = st.selectbox(
             "Choose a template to edit:", template_options)
+        # Extract the actual template name without the summary_type prefix
+        if selected_option:
+            st.session_state.selected_template = selected_option.split(
+                "] ")[-1]
 
 # Full width section for Step 4 (Editing) in main content area
 if st.session_state.selected_template:
@@ -923,7 +1007,7 @@ if st.session_state.selected_template:
 
         # Show the complete edited template
         st.markdown(
-            '<p class="smallest-font pb-10">Complete Template:</p>', unsafe_allow_html=True)
+            '<p class="smallest-font pb-10 bold">Complete Template:</p>', unsafe_allow_html=True)
         # Convert whitespace to visible characters and wrap in <pre> tag for preserving formatting
         template_with_whitespace = "\n".join(
             edited_lines).rstrip()  # Remove trailing whitespace
@@ -936,7 +1020,7 @@ if st.session_state.selected_template:
                 edited_lines).rstrip()
 
         # Add run button
-        if st.button("Run Summary"):
+        if st.button("Run Summary", type="primary"):
             if json_data and selected_config:
                 with st.spinner(f"Generating summary for {st.session_state.selected_template}..."):
                     success, prompt_logs, output_path = run_summary_generation(
@@ -968,7 +1052,22 @@ if st.session_state.selected_template:
                                             mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
                                             # Create HTML download link
-                                            href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #a3a3a2; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
+                                            href = f"""
+    <a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="
+        display: inline-block;
+        background-color: #26619c;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-family: sans-serif;
+        transition: background-color 0.3s ease;
+    " onmouseover="this.style.backgroundColor='#1a436d'" onmouseout="this.style.backgroundColor='#26619c'">
+        📥 Download Summary
+    </a>
+"""
+
                                             st.markdown(
                                                 href, unsafe_allow_html=True)
 
@@ -1017,7 +1116,7 @@ if st.session_state.selected_template:
 
                                 # Create save button
                                 st.button(
-                                    "💾 Save Changes", key="save_button", on_click=on_save_click)
+                                    "💾 Save Changes", type="primary", key="save_button", on_click=on_save_click)
                             else:
                                 logger.info(
                                     f"Template {st.session_state.selected_template} not found in edited_templates")
