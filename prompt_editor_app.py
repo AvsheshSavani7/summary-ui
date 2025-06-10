@@ -69,6 +69,14 @@ st.markdown("""
     border: 1px solid #e0e0e0;
     border-radius: 4px;
 }
+/* Reduce sidebar width */
+[data-testid="stSidebar"] {
+    min-width: 25vw !important;
+    max-width: 25vw !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    width: 25vw !important;
+}
 .draggable-line:hover {
     background-color: #e6e9ef;
 }
@@ -82,7 +90,52 @@ st.markdown("""
     font-size: 12px;
     width: 30px;
 }
+/* Reduce main section padding */
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+/* Reduce padding in elements */
+.stTextArea {
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+}
+.st-emotion-cache-16idsys {
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+}
+/* Reduce spacing between elements */
+div.stButton > button {
+    margin-top: 0.2rem !important;
+    margin-bottom: 0.2rem !important;
+}
+/* Reduce markdown spacing */
+.element-container {
+    margin-top: 0.2rem !important;
+    margin-bottom: 0.2rem !important;
+}
+/* Reduce expander padding */
+.streamlit-expanderHeader {
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+}
+.streamlit-expanderContent {
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+}
+/* Reduce code block padding */
+.stCodeBlock {
+    padding: 0.2rem !important;
+}
+            
+/* remove gap between elements */
+.st-emotion-cache-q5aj5z {
+   gap: 0.1rem !important;
+}
 </style>
+        
 """, unsafe_allow_html=True)
 
 
@@ -652,6 +705,11 @@ st.markdown("""
         font-size: 18px !important;
         margin-bottom: 0px !important;
     }
+    .medium-font {
+        font-size: 20px !important;
+        margin-bottom: 0px !important;
+        font-weight: bold;
+    }
     .large-font {
         font-size: 28px !important;
         margin-bottom: 0px !important;
@@ -659,7 +717,7 @@ st.markdown("""
     }
     .smaller-font {
         font-size: 16px !important;
-        margin-bottom: 0px !important;
+        margin-bottom: 4px !important;
         font-weight: bold;
     }
     .smallest-font {
@@ -671,12 +729,17 @@ st.markdown("""
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
-    .st-emotion-cache-16idsys p {
-        margin-bottom: 0.5rem !important;
-    }
+   
     .st-emotion-cache-16idsys {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
+    }
+    .st-emotion-cache-16txtl3 {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    .st-emotion-cache-16idsys p {
+        margin-bottom: 0.5rem !important;
     }
     /* Reduce padding in expander */
     .streamlit-expanderHeader {
@@ -697,18 +760,30 @@ st.markdown("""
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
     }
+                /* right side verticle container -Top padding for elements */
+                .st-emotion-cache-0 {
+                padding-top: 6px !important;
+                }
+
+                /* Inside editable groups */
+                .st-emotion-cache-1v2mx50  {
+                gap: 0rem !important;
+                }
+   
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="large-font">Prompt Template Editor</p>',
-            unsafe_allow_html=True)
+# st.markdown('<p class="large-font">Prompt Template Editor</p>',
+#             unsafe_allow_html=True)
 
-# Create two columns for steps 1 and 2
-col1, col2 = st.columns(2)
+# Move steps 1-3 to sidebar
+with st.sidebar:
+    st.markdown('<p class="medium-font">Prompt Template Editor</p>',
+                unsafe_allow_html=True)
+    st.markdown("---")  # Add a divider line
 
-with col1:
     # JSON File Selection (Step 1)
-    st.markdown('<p class="smaller-font">1. Select JSON Source</p>',
+    st.markdown('<p class="smaller-font"><u>1. Select JSON Source</u></p>',
                 unsafe_allow_html=True)
     json_source = st.radio("Choose JSON source:", [
                            "Upload JSON", "Select Existing JSON"])
@@ -732,144 +807,143 @@ with col1:
         else:
             st.warning("No JSON files found in simplifyJson directory")
 
-with col2:
     # Config File Selection (Step 2)
-    st.markdown('<p class="smaller-font">2. Select Config File</p>',
+    st.markdown('<p class="smaller-font"><u>2. Select Config File</u></p>',
                 unsafe_allow_html=True)
     config_files = get_config_files_from_s3()
     selected_config = st.selectbox("Choose a config file:", config_files)
 
-# Template Selection (Step 3)
-if selected_config and json_data:
-    config_dict = read_config_from_s3(selected_config)
-    st.markdown('<p class="smaller-font">3. Select Template to Edit</p>',
-                unsafe_allow_html=True)
-    template_options = list(config_dict.keys())
-    st.session_state.selected_template = st.selectbox(
-        "Choose a template to edit:", template_options)
-
-    # Full width section for Step 4 (Editing)
-    if st.session_state.selected_template:
-        st.markdown('<p class="smaller-font">4. Edit Selected Template</p>',
+    # Template Selection (Step 3)
+    if selected_config and json_data:
+        config_dict = read_config_from_s3(selected_config)
+        st.markdown('<p class="smaller-font"><u>3. Select Template to Edit</u></p>',
                     unsafe_allow_html=True)
+        template_options = list(config_dict.keys())
+        st.session_state.selected_template = st.selectbox(
+            "Choose a template to edit:", template_options)
 
-        value = config_dict[st.session_state.selected_template]
-        if isinstance(value, dict) and "prompt_template" in value:
-            prompt_template = value["prompt_template"]
+# Full width section for Step 4 (Editing) in main content area
+if st.session_state.selected_template:
+    st.markdown('<p class="smaller-font"><u>4. Edit Selected Template</u></p>',
+                unsafe_allow_html=True)
 
-            # Split the template into lines and find dynamic content
-            lines, dynamic_values = split_prompt_template(prompt_template)
+    value = config_dict[st.session_state.selected_template]
+    if isinstance(value, dict) and "prompt_template" in value:
+        prompt_template = value["prompt_template"]
 
-            # Group lines by editability
-            groups = group_lines_by_editability(lines, dynamic_values)
+        # Split the template into lines and find dynamic content
+        lines, dynamic_values = split_prompt_template(prompt_template)
 
-            # Use the new render_editable_groups function
-            edited_lines = render_editable_groups(
-                st.session_state.selected_template, groups, dynamic_values)
+        # Group lines by editability
+        groups = group_lines_by_editability(lines, dynamic_values)
 
-            # Show the complete edited template
-            st.markdown(
-                '<p class="smallest-font">Complete Template:</p>', unsafe_allow_html=True)
-            # Convert whitespace to visible characters and wrap in <pre> tag for preserving formatting
-            template_with_whitespace = "\n".join(
-                edited_lines).rstrip()  # Remove trailing whitespace
+        # Use the new render_editable_groups function
+        edited_lines = render_editable_groups(
+            st.session_state.selected_template, groups, dynamic_values)
 
-            st.code(template_with_whitespace, language="plaintext")
+        # Show the complete edited template
+        st.markdown(
+            '<p class="smallest-font">Complete Template:</p>', unsafe_allow_html=True)
+        # Convert whitespace to visible characters and wrap in <pre> tag for preserving formatting
+        template_with_whitespace = "\n".join(
+            edited_lines).rstrip()  # Remove trailing whitespace
 
-            # Update the complete template without trailing newlines
-            if edited_lines:
-                st.session_state.edited_templates[st.session_state.selected_template] = "\n".join(
-                    edited_lines).rstrip()
+        st.code(template_with_whitespace, language="plaintext")
 
-            # Add run button
-            if st.button("Run Summary"):
-                if json_data and selected_config:
-                    with st.spinner(f"Generating summary for {st.session_state.selected_template}..."):
-                        success, prompt_logs, output_path = run_summary_generation(
-                            json_data, config_dict, st.session_state.selected_template)
+        # Update the complete template without trailing newlines
+        if edited_lines:
+            st.session_state.edited_templates[st.session_state.selected_template] = "\n".join(
+                edited_lines).rstrip()
 
-                        if success and output_path and os.path.exists(output_path):
-                            st.success(f"✅ Summary generated successfully!")
+        # Add run button
+        if st.button("Run Summary"):
+            if json_data and selected_config:
+                with st.spinner(f"Generating summary for {st.session_state.selected_template}..."):
+                    success, prompt_logs, output_path = run_summary_generation(
+                        json_data, config_dict, st.session_state.selected_template)
 
-                            # Create tabs for Results and Changes
-                            results_tab, changes_tab = st.tabs(
-                                ["Summary Results", "Prompt Changes"])
+                    if success and output_path and os.path.exists(output_path):
+                        st.success(f"✅ Summary generated successfully!")
 
-                            with results_tab:
-                                try:
-                                    # Create a container for the download link
-                                    download_container = st.container()
+                        # Create tabs for Results and Changes
+                        results_tab, changes_tab = st.tabs(
+                            ["Summary Results", "Prompt Changes"])
 
-                                    with download_container:
-                                        if os.path.exists(output_path):
-                                            # Read file and encode to base64
-                                            with open(output_path, "rb") as file:
-                                                file_bytes = file.read()
-                                                import base64
-                                                b64_data = base64.b64encode(
-                                                    file_bytes).decode()
+                        with results_tab:
+                            try:
+                                # Create a container for the download link
+                                download_container = st.container()
 
-                                                file_name = os.path.basename(
-                                                    output_path)
-                                                mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                with download_container:
+                                    if os.path.exists(output_path):
+                                        # Read file and encode to base64
+                                        with open(output_path, "rb") as file:
+                                            file_bytes = file.read()
+                                            import base64
+                                            b64_data = base64.b64encode(
+                                                file_bytes).decode()
 
-                                                # Create HTML download link
-                                                href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #a3a3a2; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
-                                                st.markdown(
-                                                    href, unsafe_allow_html=True)
+                                            file_name = os.path.basename(
+                                                output_path)
+                                            mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
-                                    # Show prompts used in generation
-                                    if prompt_logs:
+                                            # Create HTML download link
+                                            href = f'<a href="data:{mime_type};base64,{b64_data}" download="{file_name}" style="text-decoration: none;"><div style="background-color: #a3a3a2; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center;">📥 Download Summary</div></a>'
+                                            st.markdown(
+                                                href, unsafe_allow_html=True)
+
+                                # Show prompts used in generation
+                                if prompt_logs:
+                                    st.markdown(
+                                        '<p class="smaller-font">📋 Prompt Used in Generation</p>', unsafe_allow_html=True)
+                                    log = prompt_logs[0]  # Show first log
+                                    with st.expander(f"**{log['clause_name']}**"):
                                         st.markdown(
-                                            '<p class="smaller-font">📋 Prompt Used in Generation</p>', unsafe_allow_html=True)
-                                        log = prompt_logs[0]  # Show first log
-                                        with st.expander(f"**{log['clause_name']}**"):
-                                            st.markdown(
-                                                '<p class="smallest-font">Final Prompt</p>', unsafe_allow_html=True)
-                                            st.code(log['final_prompt'])
+                                            '<p class="smallest-font">Final Prompt</p>', unsafe_allow_html=True)
+                                        st.code(log['final_prompt'])
 
-                                            st.markdown(
-                                                '<p class="smallest-font">Generated Output</p>', unsafe_allow_html=True)
-                                            st.code(log['output'])
+                                        st.markdown(
+                                            '<p class="smallest-font">Generated Output</p>', unsafe_allow_html=True)
+                                        st.code(log['output'])
 
-                                except Exception as e:
-                                    st.error(
-                                        f"Error preparing download: {str(e)}")
+                            except Exception as e:
+                                st.error(
+                                    f"Error preparing download: {str(e)}")
 
-                            with changes_tab:
-                                logger.info("Entering changes_tab section")
+                        with changes_tab:
+                            logger.info("Entering changes_tab section")
 
-                                # Check if we need to rerun from previous save
-                                if st.session_state.needs_rerun:
-                                    st.session_state.needs_rerun = False
-                                    st.rerun()
+                            # Check if we need to rerun from previous save
+                            if st.session_state.needs_rerun:
+                                st.session_state.needs_rerun = False
+                                st.rerun()
 
-                                if st.session_state.selected_template in st.session_state.edited_templates:
-                                    logger.info(
-                                        f"Found template {st.session_state.selected_template} in edited_templates")
-                                    original = config_dict[st.session_state.selected_template]["prompt_template"]
-                                    edited = st.session_state.edited_templates[
-                                        st.session_state.selected_template]
+                            if st.session_state.selected_template in st.session_state.edited_templates:
+                                logger.info(
+                                    f"Found template {st.session_state.selected_template} in edited_templates")
+                                original = config_dict[st.session_state.selected_template]["prompt_template"]
+                                edited = st.session_state.edited_templates[
+                                    st.session_state.selected_template]
 
-                                    st.markdown("### Template Comparison")
+                                st.markdown("### Template Comparison")
 
-                                    st.markdown("**Original Template:**")
-                                    st.text_area(
-                                        "Original", value=original, height=300, disabled=True, label_visibility="collapsed")
+                                st.markdown("**Original Template:**")
+                                st.text_area(
+                                    "Original", value=original, height=300, disabled=True, label_visibility="collapsed")
 
-                                    st.markdown("**Modified Template:**")
-                                    st.text_area(
-                                        "Modified", value=edited, height=300, disabled=True, label_visibility="collapsed")
+                                st.markdown("**Modified Template:**")
+                                st.text_area(
+                                    "Modified", value=edited, height=300, disabled=True, label_visibility="collapsed")
 
-                                    # Create save button
-                                    st.button(
-                                        "💾 Save Changes", key="save_button", on_click=on_save_click)
-                                else:
-                                    logger.info(
-                                        f"Template {st.session_state.selected_template} not found in edited_templates")
-        else:
-            st.warning(
-                "No prompt template found in this configuration.")
+                                # Create save button
+                                st.button(
+                                    "💾 Save Changes", key="save_button", on_click=on_save_click)
+                            else:
+                                logger.info(
+                                    f"Template {st.session_state.selected_template} not found in edited_templates")
+    else:
+        st.warning(
+            "No prompt template found in this configuration.")
 elif not json_data:
     st.info("Please select a JSON file first")
 elif not selected_config:
