@@ -191,6 +191,20 @@ div.stButton > button {
  gap: 0rem !important;
 }
 
+/* Sidebar gap */
+[data-testid="stBaseButton-secondary"] {
+   padding: 0.1rem 0.4rem !important;
+   min-height:28px !important;
+   line-height: 1.2 !important;
+}
+            
+[data-testid="stVerticalBlockBorderWrapper"] {
+   height: 100% !important;
+}
+[data-testid="stVerticalBlock"] {
+   height: 100% !important;
+   justify-content: space-between !important;
+}
 
 </style>
         
