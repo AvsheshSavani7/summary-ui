@@ -11,7 +11,7 @@ from docx.oxml import OxmlElement
 from collections import defaultdict
 import datetime
 import dateutil.parser
-
+import google.generativeai as genai
 # summary_engine.py
 RUN_CONCISE_SUMMARIES = True
 RUN_FULSOME_SUMMARIES = True
@@ -21,31 +21,83 @@ RUN_FULSOME_SUMMARIES = True
 # =========================
 
 
-def load_api_key():
+def load_api_keys():
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY not found in .env file")
-    return api_key
+    openai_key = os.getenv("OPENAI_API_KEY")
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not openai_key and not gemini_key:
+        raise ValueError("No API keys found in .env file")
+    return openai_key, gemini_key
 
 
-openai.api_key = load_api_key()
+# Initialize API keys
+OPENAI_API_KEY, GEMINI_API_KEY = load_api_keys()
+openai.api_key = OPENAI_API_KEY
 
 
 def get_summary_mode_toggles():
     return RUN_CONCISE_SUMMARIES, RUN_FULSOME_SUMMARIES
 
 
-def call_llm(prompt_text, model="gpt-4", temperature=0):
+def call_llm(prompt_text, model_config=None):
+    if not model_config:
+        # Default to GPT-4 if no model config provided
+        return call_openai(prompt_text)
+
+    provider = model_config.get('provider', 'openai')
+    config = model_config.get('config', {})
+
+    if provider == 'openai':
+        return call_openai(prompt_text, config)
+    elif provider == 'gemini':
+        return call_gemini(prompt_text, config)
+    else:
+        raise ValueError(f"Unsupported model provider: {provider}")
+
+
+def call_openai(prompt_text, config=None):
+    if not config:
+        config = {"model": "gpt-4", "temperature": 0}
+
+    print(f"OpenAI Prompt: {prompt_text}")
+    print(
+        f"Using model: {config['model']}, Temperature: {config['temperature']}")
+
     response = openai.chat.completions.create(
-        model=model,
+        model=config['model'],
         messages=[
             {"role": "system", "content": "You are a legal summarization assistant."},
             {"role": "user", "content": prompt_text}
         ],
-        temperature=temperature
+        temperature=config['temperature']
     )
     return response.choices[0].message.content.strip()
+
+
+def call_gemini(prompt_text, config=None):
+    if not config:
+        config = {"model": "gemini-2.5-flash", "temperature": 0}
+
+    print(f"Gemini Prompt: {prompt_text}")
+    print(
+        f"Using model: {config['model']}, Temperature: {config['temperature']}")
+
+    try:
+
+        genai.configure(api_key=GEMINI_API_KEY)
+
+        model = genai.GenerativeModel(config['model'])
+        response = model.generate_content(
+            prompt_text,
+            generation_config=genai.types.GenerationConfig(
+                temperature=config['temperature']
+            )
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Error calling Gemini API: {str(e)}")
+        # Fallback to OpenAI if Gemini fails
+        return call_openai(prompt_text)
 
 # =========================
 # Utility to Traverse Nested Data
@@ -236,10 +288,16 @@ def normalize_to_string_list(value):
 
 
 def process_clause_config(clause_config, schema_data):
-
     prompt_fields = {}
     references = []
     final_text_output = None
+
+    # Get model configuration if provided
+    model_config = clause_config.get('model_config')
+
+    # Force view_prompt to True during development
+    clause_config['view_prompt'] = True
+
     for cond in clause_config.get("conditions", []):
         result = evaluate_condition_branch(cond, schema_data)
         if "add_to_prompt" in result:
@@ -255,23 +313,22 @@ def process_clause_config(clause_config, schema_data):
             references.extend(result["add_references"])
         if "text_output" in result:
             final_text_output = result["text_output"]
+
     # Handle list-based prompt fields
     for k, v in prompt_fields.items():
         if isinstance(v, list):
             join_type = clause_config.get("join_type", "bullets")
             if join_type == "bullets":
-                print(f"Processing field: {k}")
-                print(f"Value (v): {v}")
-                print(
-                    f"Type of first item: {type(v[0]) if isinstance(v, list) and v else 'N/A'}")
                 prompt_fields[k] = "\n- " + \
                     "\n- ".join(normalize_to_string_list(v))
             elif join_type == "sentences":
                 prompt_fields[k] = " ".join(normalize_to_string_list(v))
             else:
                 prompt_fields[k] = "\n".join(normalize_to_string_list(v))
+
     references.extend(clause_config.get("reference_fields", []))
     references = list(set(references))
+
     if clause_config.get("use_short_reference", True):
         short_refs = extract_short_reference(
             references, schema_data, fallback_to_section=True)
@@ -281,6 +338,7 @@ def process_clause_config(clause_config, schema_data):
             for path in references
             if get_nested_value(schema_data, path)
         ]
+
     # If prompt can be built
     if prompt_fields and "prompt_template" in clause_config:
         try:
@@ -289,44 +347,67 @@ def process_clause_config(clause_config, schema_data):
                 prompt += f"\n\nLimit the response to {clause_config['max_words']} words."
             if clause_config.get("format_style"):
                 prompt += f"\n\nFormat the response in a {clause_config['format_style']} style."
+
+            # Call LLM with model configuration
+            llm_result = call_llm(prompt, model_config)
+
+            return {
+                "output": llm_result,
+                "references": short_refs,
+                "used_prompt": prompt,  # Always return the prompt
+                "summary_type": clause_config.get("summary_type"),
+                "format_style": clause_config.get("format_style"),
+                "summary_display_section": clause_config.get("summary_display_section"),
+                "summary_rank": clause_config.get("summary_rank"),
+                "max_words": clause_config.get("max_words")
+            }
         except KeyError as e:
             if "fallback_prompt" in clause_config:
                 prompt = clause_config["fallback_prompt"]
+                llm_result = call_llm(prompt, model_config)
+                return {
+                    "output": llm_result,
+                    "references": short_refs,
+                    "used_prompt": prompt,  # Always return the prompt
+                    "summary_type": clause_config.get("summary_type"),
+                    "format_style": clause_config.get("format_style"),
+                    "summary_display_section": clause_config.get("summary_display_section"),
+                    "summary_rank": clause_config.get("summary_rank"),
+                    "max_words": clause_config.get("max_words")
+                }
             else:
-                prompt = f"[Missing field {str(e)} for prompt generation]"
-        llm_result = call_llm(prompt)
-        return {
-            "output": llm_result,
-            "references": short_refs,
-            "used_prompt": prompt if clause_config.get("view_prompt", False) else None,
-            "summary_type": clause_config.get("summary_type"),
-            "format_style": clause_config.get("format_style"),
-            "summary_display_section": clause_config.get("summary_display_section"),
-            # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
-            "summary_rank": clause_config.get("summary_rank"),
-            "max_words": clause_config.get("max_words")
-        }
+                error_msg = f"[Missing field {str(e)} for prompt generation]"
+                return {
+                    "output": error_msg,
+                    "references": short_refs,
+                    "used_prompt": error_msg,  # Return error as prompt
+                    "summary_type": clause_config.get("summary_type"),
+                    "format_style": clause_config.get("format_style"),
+                    "summary_display_section": clause_config.get("summary_display_section"),
+                    "summary_rank": clause_config.get("summary_rank"),
+                    "max_words": clause_config.get("max_words")
+                }
+
     # If no prompt was built, use fallback text_output
     if final_text_output:
         return {
             "output": final_text_output,
             "references": short_refs,
-            "used_prompt": None,
+            "used_prompt": "Used direct text output",  # Indicate direct text output
             "summary_type": clause_config.get("summary_type"),
             "format_style": clause_config.get("format_style"),
             "summary_display_section": clause_config.get("summary_display_section"),
-            # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
             "summary_rank": clause_config.get("summary_rank"),
             "max_words": clause_config.get("max_words")
         }
+
     return {
         "output": "No output generated.",
         "references": short_refs,
-        "used_prompt": None,
+        "used_prompt": "No prompt was generated",  # Indicate no prompt
         "summary_type": clause_config.get("summary_type"),
         "format_style": clause_config.get("format_style"),
         "summary_display_section": clause_config.get("summary_display_section"),
-        # "summary_display_sub_section" : clause_config.get("summary_display_sub_section"),
         "summary_rank": clause_config.get("summary_rank"),
         "max_words": clause_config.get("max_words")
     }

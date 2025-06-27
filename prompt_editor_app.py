@@ -35,6 +35,10 @@ s3_client = boto3.client(
 )
 S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 
+# Configure API keys for different providers
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
 # Configure the page
 st.set_page_config(
     page_title="Prompt Template Editor",
@@ -57,6 +61,12 @@ if 'line_order' not in st.session_state:
 
 if 'needs_rerun' not in st.session_state:
     st.session_state.needs_rerun = False
+
+if 'model_provider' not in st.session_state:
+    st.session_state.model_provider = "OpenAI"
+
+if 'selected_model' not in st.session_state:
+    st.session_state.selected_model = "GPT-4"
 
 # Add custom CSS for drag and drop functionality
 st.markdown("""
@@ -652,10 +662,61 @@ def save_config_changes_to_s3(config_name, edited_templates):
         return False
 
 
+def get_model_config():
+    """Get the configuration for the selected AI model"""
+    model = st.session_state.selected_model
+    provider = st.session_state.model_provider
+
+    if provider == "OpenAI":
+        model_configs = {
+            "GPT-4": {
+                "model": "gpt-4",
+                "temperature": 0
+            },
+            "GPT-4.1": {
+                "model": "gpt-4.1",
+                "temperature": 0
+            },
+            "GPT-4o": {
+                "model": "gpt-4o",
+                "temperature": 0
+            },
+            "GPT-3.5 Turbo": {
+                "model": "gpt-3.5-turbo",
+                "temperature": 0
+            }
+        }
+        return {"provider": "openai", "config": model_configs.get(model, model_configs["GPT-4"])}
+
+    else:  # Gemini
+        model_configs = {
+            "Gemini 2.0 Flash": {
+                "model": "gemini-2.0-flash",
+                "temperature": 0
+            },
+            "Gemini 2.5 Flash": {
+                "model": "gemini-2.5-flash",
+                "temperature": 0
+            },
+            "Gemini 1.5 Pro": {
+                "model": "gemini-1.5-pro",
+                "temperature": 0
+            },
+        }
+        return {"provider": "gemini", "config": model_configs.get(model, model_configs["Gemini 2.5 Flash"])}
+
+
 def run_summary_generation(json_data, config_dict, selected_template=None):
     try:
         summary_outputs = []
         prompt_logs = []  # Store prompts for logging
+
+        # Get model configuration
+        model_config = get_model_config()
+
+        # Log the model being used
+        st.info(
+            f"🤖 Using Model: {model_config['provider'].upper()} - {model_config['config']['model']}")
 
         # If selected_template is provided, only process that template
         if selected_template:
@@ -670,7 +731,11 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
                 clause_config = clause_config.copy()
                 clause_config['prompt_template'] = st.session_state.edited_templates[clause_name]
 
+            # Add model configuration to clause_config
+            clause_config['model_config'] = model_config
+
             result = process_clause_config(clause_config, json_data)
+
             if result["output"] and result["output"] != "No output generated.":
                 if (result.get("summary_type", "").lower() == "concise" and
                         clause_config.get("view_prompt", True) is False):
@@ -936,8 +1001,36 @@ with st.sidebar:
                 unsafe_allow_html=True)
     st.markdown("---")  # Add a divider line
 
+    # AI Model Selection (Step 0)
+    st.markdown('<p class="smaller-font"><u>1. Select AI Model</u></p>',
+                unsafe_allow_html=True)
+
+    # Group models by provider
+    openai_models = ["GPT-4", "GPT-4.1", "GPT-4o", "GPT-3.5 Turbo"]
+    google_models = ["Gemini 2.0 Flash", "Gemini 2.5 Flash", "Gemini 1.5 Pro"]
+
+    # Create a radio button for model provider
+    model_provider = st.radio("Select Model Provider:", [
+                              "OpenAI", "Gemini"], key="model_provider")
+
+    # Show models based on selected provider
+    if model_provider == "OpenAI":
+        selected_model = st.selectbox(
+            "Choose OpenAI Model:", openai_models, key="selected_model")
+        if selected_model != st.session_state.selected_model:
+            st.warning(
+                "Note: Switching to OpenAI models may affect the output quality and cost.")
+    else:  # Gemini
+        selected_model = st.selectbox(
+            "Choose Gemini Model:", google_models, key="selected_model")
+        if selected_model != st.session_state.selected_model:
+            st.warning(
+                "Note: Switching to Gemini models may affect the output quality and cost.")
+
+    st.markdown("---")  # Add a divider line
+
     # JSON File Selection (Step 1)
-    st.markdown('<p class="smaller-font pt-20"><u>1. Select JSON Source</u></p>',
+    st.markdown('<p class="smaller-font"><u>2. Select JSON Source</u></p>',
                 unsafe_allow_html=True)
     json_source = st.radio("Choose JSON source:", [
                            "Upload JSON", "Select Existing JSON"])
@@ -962,7 +1055,7 @@ with st.sidebar:
             st.warning("No JSON files found in simplifyJson directory")
 
     # Config File Selection (Step 2)
-    st.markdown('<p class="smaller-font"><u>2. Select Config File</u></p>',
+    st.markdown('<p class="smaller-font"><u>3. Select Config File</u></p>',
                 unsafe_allow_html=True)
     config_files = get_config_files_from_s3()
     selected_config = st.selectbox("Choose a config file:", config_files)
@@ -970,7 +1063,7 @@ with st.sidebar:
     # Template Selection (Step 3)
     if selected_config and json_data:
         config_dict = read_config_from_s3(selected_config)
-        st.markdown('<p class="smaller-font"><u>3. Select Template to Edit</u></p>',
+        st.markdown('<p class="smaller-font"><u>4. Select Template to Edit</u></p>',
                     unsafe_allow_html=True)
         # Create template options with summary_type prefix
         template_options = []

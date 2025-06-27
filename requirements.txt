@@ -1,6 +1,7 @@
-openai
+openai>=1.0.0
 python-docx
 docx2pdf
 streamlit
 python-dotenv
 boto3
+google-generativeai>=0.3.0
