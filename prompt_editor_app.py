@@ -68,6 +68,9 @@ if 'model_provider' not in st.session_state:
 if 'selected_model' not in st.session_state:
     st.session_state.selected_model = "GPT-4"
 
+if 'config_dict' not in st.session_state:
+    st.session_state.config_dict = None
+
 # Add custom CSS for drag and drop functionality
 st.markdown("""
 <style>
@@ -708,6 +711,10 @@ def get_model_config():
 
 def run_summary_generation(json_data, config_dict, selected_template=None):
     try:
+        if config_dict is None:
+            st.error("No configuration loaded. Please select a config file first.")
+            return False, [], None
+
         summary_outputs = []
         prompt_logs = []  # Store prompts for logging
 
@@ -1062,12 +1069,12 @@ with st.sidebar:
 
     # Template Selection (Step 3)
     if selected_config and json_data:
-        config_dict = read_config_from_s3(selected_config)
+        st.session_state.config_dict = read_config_from_s3(selected_config)
         st.markdown('<p class="smaller-font"><u>4. Select Template to Edit</u></p>',
                     unsafe_allow_html=True)
         # Create template options with summary_type prefix
         template_options = []
-        for key, value in config_dict.items():
+        for key, value in st.session_state.config_dict.items():
             summary_type = value.get("summary_type", "Un")
             summary_type_short = summary_type[:3]  # Get first 3 characters
             template_options.append(f"[{summary_type_short}] {key}")
@@ -1080,11 +1087,11 @@ with st.sidebar:
                 "] ")[-1]
 
 # Full width section for Step 4 (Editing) in main content area
-if st.session_state.selected_template:
+if st.session_state.selected_template and st.session_state.config_dict is not None:
     st.markdown('<p class="smaller-font"><u>4. Edit Selected Template</u></p>',
                 unsafe_allow_html=True)
 
-    value = config_dict[st.session_state.selected_template]
+    value = st.session_state.config_dict[st.session_state.selected_template]
     if isinstance(value, dict) and "prompt_template" in value:
         prompt_template = value["prompt_template"]
 
@@ -1117,7 +1124,7 @@ if st.session_state.selected_template:
             if json_data and selected_config:
                 with st.spinner(f"Generating summary for {st.session_state.selected_template}..."):
                     success, prompt_logs, output_path = run_summary_generation(
-                        json_data, config_dict, st.session_state.selected_template)
+                        json_data, st.session_state.config_dict, st.session_state.selected_template)
 
                     if success and output_path and os.path.exists(output_path):
                         st.success(f"✅ Summary generated successfully!")
@@ -1193,7 +1200,8 @@ if st.session_state.selected_template:
                             if st.session_state.selected_template in st.session_state.edited_templates:
                                 logger.info(
                                     f"Found template {st.session_state.selected_template} in edited_templates")
-                                original = config_dict[st.session_state.selected_template]["prompt_template"]
+                                original = st.session_state.config_dict[
+                                    st.session_state.selected_template]["prompt_template"]
                                 edited = st.session_state.edited_templates[
                                     st.session_state.selected_template]
 
