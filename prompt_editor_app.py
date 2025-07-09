@@ -71,6 +71,13 @@ if 'selected_model' not in st.session_state:
 if 'config_dict' not in st.session_state:
     st.session_state.config_dict = None
 
+# Add new session state variables for format_style and max_words
+if 'edited_format_styles' not in st.session_state:
+    st.session_state.edited_format_styles = {}
+
+if 'edited_max_words' not in st.session_state:
+    st.session_state.edited_max_words = {}
+
 # Add custom CSS for drag and drop functionality
 st.markdown("""
 <style>
@@ -580,11 +587,21 @@ def save_config_changes_to_s3(config_name, edited_templates):
         logger.info(f"Debug: Found config variable name: {config_var_name}")
         config_dict = namespace[config_var_name]
 
-        # Update only the prompt_template in the dictionary while preserving all other fields
+        # Update the prompt_template, format_style, and max_words in the dictionary
         for key, new_template in edited_templates.items():
             if key in config_dict:
                 config_dict[key]['prompt_template'] = new_template
                 logger.info(f"Debug: Updated template for {key}")
+
+                # Update format_style if it was edited
+                if key in st.session_state.edited_format_styles:
+                    config_dict[key]['format_style'] = st.session_state.edited_format_styles[key]
+                    logger.info(f"Debug: Updated format_style for {key}")
+
+                # Update max_words if it was edited
+                if key in st.session_state.edited_max_words:
+                    config_dict[key]['max_words'] = st.session_state.edited_max_words[key]
+                    logger.info(f"Debug: Updated max_words for {key}")
             else:
                 error_msg = f"Warning: Key {key} not found in config"
                 st.error(error_msg)
@@ -733,10 +750,20 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
             templates_to_process = config_dict
 
         for clause_name, clause_config in templates_to_process.items():
+            # Create a copy of the clause config to avoid modifying the original
+            clause_config = clause_config.copy()
+
             # If we have edited this template, use the edited version
             if clause_name in st.session_state.edited_templates:
-                clause_config = clause_config.copy()
                 clause_config['prompt_template'] = st.session_state.edited_templates[clause_name]
+
+            # If we have edited format_style, use the edited version
+            if clause_name in st.session_state.edited_format_styles:
+                clause_config['format_style'] = st.session_state.edited_format_styles[clause_name]
+
+            # If we have edited max_words, use the edited version
+            if clause_name in st.session_state.edited_max_words:
+                clause_config['max_words'] = st.session_state.edited_max_words[clause_name]
 
             # Add model configuration to clause_config
             clause_config['model_config'] = model_config
@@ -876,6 +903,14 @@ def on_save_click():
             logger.info("Save completed successfully")
             # Remove from edited templates
             del st.session_state.edited_templates[save_data['template']]
+
+            # Also remove from edited format_style and max_words if they exist
+            if save_data['template'] in st.session_state.edited_format_styles:
+                del st.session_state.edited_format_styles[save_data['template']]
+
+            if save_data['template'] in st.session_state.edited_max_words:
+                del st.session_state.edited_max_words[save_data['template']]
+
             logger.info("Session state cleared after successful save")
             # Set flag for rerun instead of calling rerun directly
             st.session_state.needs_rerun = True
@@ -1105,6 +1140,69 @@ if st.session_state.selected_template and st.session_state.config_dict is not No
         edited_lines = render_editable_groups(
             st.session_state.selected_template, groups, dynamic_values)
 
+        # Add format_style and max_words editing options
+        st.markdown(
+            '<p class="smallest-font pb-10 bold">Output Configuration:</p>', unsafe_allow_html=True)
+
+        # Create a container for the configuration options
+        config_container = st.container()
+
+        with config_container:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                # Format Style toggle
+                current_format_style = value.get("format_style", "paragraph")
+
+                # Use the current edited value if it exists
+                if st.session_state.selected_template in st.session_state.edited_format_styles:
+                    current_format_style = st.session_state.edited_format_styles[
+                        st.session_state.selected_template]
+
+                format_style = st.radio(
+                    "Format Style:",
+                    ["paragraph", "bullet"],
+                    index=0 if current_format_style == "paragraph" else 1,
+                    horizontal=True,
+                    key=f"format_style_{st.session_state.selected_template}"
+                )
+
+                # Store the edited value if it's different from the original
+                if format_style != value.get("format_style", "paragraph"):
+                    st.session_state.edited_format_styles[st.session_state.selected_template] = format_style
+                # If it's the same as original and exists in edited values, remove it
+                elif st.session_state.selected_template in st.session_state.edited_format_styles:
+                    if format_style == value.get("format_style", "paragraph"):
+                        del st.session_state.edited_format_styles[st.session_state.selected_template]
+
+            with col2:
+                # Max Words input
+                current_max_words = value.get("max_words", 50)
+
+                # Use the current edited value if it exists
+                if st.session_state.selected_template in st.session_state.edited_max_words:
+                    current_max_words = st.session_state.edited_max_words[
+                        st.session_state.selected_template]
+
+                max_words = st.number_input(
+                    "Max Words:",
+                    min_value=10,
+                    max_value=500,
+                    value=current_max_words,
+                    step=10,
+                    key=f"max_words_{st.session_state.selected_template}"
+                )
+
+                # Store the edited value if it's different from the original
+                if max_words != value.get("max_words", 50):
+                    st.session_state.edited_max_words[st.session_state.selected_template] = max_words
+                # If it's the same as original and exists in edited values, remove it
+                elif st.session_state.selected_template in st.session_state.edited_max_words:
+                    if max_words == value.get("max_words", 50):
+                        del st.session_state.edited_max_words[st.session_state.selected_template]
+
+        st.markdown("---")
+
         # Show the complete edited template
         st.markdown(
             '<p class="smallest-font pb-10 bold">Complete Template:</p>', unsafe_allow_html=True)
@@ -1197,30 +1295,68 @@ if st.session_state.selected_template and st.session_state.config_dict is not No
                                 st.session_state.needs_rerun = False
                                 st.rerun()
 
-                            if st.session_state.selected_template in st.session_state.edited_templates:
+                            template_changed = st.session_state.selected_template in st.session_state.edited_templates
+                            format_style_changed = st.session_state.selected_template in st.session_state.edited_format_styles
+                            max_words_changed = st.session_state.selected_template in st.session_state.edited_max_words
+
+                            if template_changed or format_style_changed or max_words_changed:
                                 logger.info(
-                                    f"Found template {st.session_state.selected_template} in edited_templates")
-                                original = st.session_state.config_dict[
-                                    st.session_state.selected_template]["prompt_template"]
-                                edited = st.session_state.edited_templates[
-                                    st.session_state.selected_template]
+                                    f"Found changes for template {st.session_state.selected_template}")
 
-                                st.markdown("### Template Comparison")
+                                if template_changed:
+                                    original = st.session_state.config_dict[
+                                        st.session_state.selected_template]["prompt_template"]
+                                    edited = st.session_state.edited_templates[
+                                        st.session_state.selected_template]
 
-                                st.markdown("**Original Template:**")
-                                st.text_area(
-                                    "Original", value=original, height=300, disabled=True, label_visibility="collapsed")
+                                    st.markdown("### Template Comparison")
 
-                                st.markdown("**Modified Template:**")
-                                st.text_area(
-                                    "Modified", value=edited, height=300, disabled=True, label_visibility="collapsed")
+                                    st.markdown("**Original Template:**")
+                                    st.text_area(
+                                        "Original", value=original, height=300, disabled=True, label_visibility="collapsed")
+
+                                    st.markdown("**Modified Template:**")
+                                    st.text_area(
+                                        "Modified", value=edited, height=300, disabled=True, label_visibility="collapsed")
+
+                                # Display format_style changes if any
+                                if format_style_changed:
+                                    original_format = st.session_state.config_dict[
+                                        st.session_state.selected_template].get("format_style", "paragraph")
+                                    edited_format = st.session_state.edited_format_styles[
+                                        st.session_state.selected_template]
+
+                                    st.markdown("### Format Style Change")
+                                    col1, col2 = st.columns(2)
+                                    with col1:
+                                        st.markdown(
+                                            f"**Original:** {original_format}")
+                                    with col2:
+                                        st.markdown(
+                                            f"**Modified:** {edited_format}")
+
+                                # Display max_words changes if any
+                                if max_words_changed:
+                                    original_max_words = st.session_state.config_dict[
+                                        st.session_state.selected_template].get("max_words", 50)
+                                    edited_max_words = st.session_state.edited_max_words[
+                                        st.session_state.selected_template]
+
+                                    st.markdown("### Max Words Change")
+                                    col1, col2 = st.columns(2)
+                                    with col1:
+                                        st.markdown(
+                                            f"**Original:** {original_max_words}")
+                                    with col2:
+                                        st.markdown(
+                                            f"**Modified:** {edited_max_words}")
 
                                 # Create save button
                                 st.button(
                                     "💾 Save Changes", type="primary", key="save_button", on_click=on_save_click)
                             else:
                                 logger.info(
-                                    f"Template {st.session_state.selected_template} not found in edited_templates")
+                                    f"No changes found for template {st.session_state.selected_template}")
     else:
         st.warning(
             "No prompt template found in this configuration.")
