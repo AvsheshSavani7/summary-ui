@@ -12,6 +12,7 @@ from collections import defaultdict
 import datetime
 import dateutil.parser
 import google.generativeai as genai
+import anthropic
 # summary_engine.py
 RUN_CONCISE_SUMMARIES = True
 RUN_FULSOME_SUMMARIES = True
@@ -25,13 +26,14 @@ def load_api_keys():
     load_dotenv()
     openai_key = os.getenv("OPENAI_API_KEY")
     gemini_key = os.getenv("GEMINI_API_KEY")
-    if not openai_key and not gemini_key:
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    if not openai_key and not gemini_key and not anthropic_key:
         raise ValueError("No API keys found in .env file")
-    return openai_key, gemini_key
+    return openai_key, gemini_key, anthropic_key
 
 
 # Initialize API keys
-OPENAI_API_KEY, GEMINI_API_KEY = load_api_keys()
+OPENAI_API_KEY, GEMINI_API_KEY, ANTHROPIC_API_KEY = load_api_keys()
 openai.api_key = OPENAI_API_KEY
 
 
@@ -51,6 +53,8 @@ def call_llm(prompt_text, model_config=None):
         return call_openai(prompt_text, config)
     elif provider == 'gemini':
         return call_gemini(prompt_text, config)
+    elif provider == 'anthropic':
+        return call_anthropic(prompt_text, config)
     else:
         raise ValueError(f"Unsupported model provider: {provider}")
 
@@ -97,6 +101,32 @@ def call_gemini(prompt_text, config=None):
     except Exception as e:
         print(f"Error calling Gemini API: {str(e)}")
         # Fallback to OpenAI if Gemini fails
+        return call_openai(prompt_text)
+
+
+def call_anthropic(prompt_text, config=None):
+    if not config:
+        config = {"model": "claude-sonnet-4-20250514", "temperature": 0}
+
+    print(f"Anthropic Prompt: {prompt_text}")
+    print(
+        f"Using model: {config['model']}, Temperature: {config['temperature']}")
+
+    try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+        response = client.messages.create(
+            model=config['model'],
+            max_tokens=4000,
+            temperature=config['temperature'],
+            messages=[
+                {"role": "user", "content": prompt_text}
+            ]
+        )
+        return response.content[0].text.strip()
+    except Exception as e:
+        print(f"Error calling Anthropic API: {str(e)}")
+        # Fallback to OpenAI if Anthropic fails
         return call_openai(prompt_text)
 
 # =========================
@@ -532,7 +562,7 @@ def write_docx_summary(summaries, output_path, RUN_CONCISE_SUMMARIES, RUN_FULSOM
 # =========================
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(__file__))
-    from clause_configs.ordinary_course_config import ORDINARY_COURSE_CLAUSES
+    from clause_configs1.ordinary_course_config import ORDINARY_COURSE_CLAUSES
 
     CLAUSE_CONFIG = ORDINARY_COURSE_CLAUSES
 

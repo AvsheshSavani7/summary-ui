@@ -5,3 +5,4 @@ streamlit
 python-dotenv
 boto3
 google-generativeai>=0.3.0
+anthropic>=0.18.0

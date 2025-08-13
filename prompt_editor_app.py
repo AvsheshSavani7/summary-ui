@@ -38,6 +38,7 @@ S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 # Configure API keys for different providers
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
 # Configure the page
 st.set_page_config(
@@ -708,7 +709,7 @@ def get_model_config():
         }
         return {"provider": "openai", "config": model_configs.get(model, model_configs["GPT-4"])}
 
-    else:  # Gemini
+    elif provider == "Gemini":
         model_configs = {
             "Gemini 2.0 Flash": {
                 "model": "gemini-2.0-flash",
@@ -724,6 +725,31 @@ def get_model_config():
             },
         }
         return {"provider": "gemini", "config": model_configs.get(model, model_configs["Gemini 2.5 Flash"])}
+
+    else:  # Anthropic
+        model_configs = {
+            "Claude Opus 4.1": {
+                "model": "claude-opus-4-1-20250805",
+                "temperature": 0
+            },
+            "Claude Opus 4": {
+                "model": "claude-opus-4-20250514",
+                "temperature": 0
+            },
+            "Claude Sonnet 4": {
+                "model": "claude-sonnet-4-20250514",
+                "temperature": 0
+            },
+            "Claude Sonnet 3.7": {
+                "model": "claude-3-7-sonnet-20250219",
+                "temperature": 0
+            },
+            "Claude Haiku 3.5": {
+                "model": "claude-3-5-haiku-20241022",
+                "temperature": 0
+            },
+        }
+        return {"provider": "anthropic", "config": model_configs.get(model, model_configs["Claude Sonnet 4"])}
 
 
 def run_summary_generation(json_data, config_dict, selected_template=None):
@@ -1050,10 +1076,12 @@ with st.sidebar:
     # Group models by provider
     openai_models = ["GPT-4", "GPT-4.1", "GPT-4o", "GPT-3.5 Turbo"]
     google_models = ["Gemini 2.0 Flash", "Gemini 2.5 Flash", "Gemini 1.5 Pro"]
+    anthropic_models = ["Claude Opus 4.1", "Claude Opus 4",
+                        "Claude Sonnet 4", "Claude Sonnet 3.7", "Claude Haiku 3.5"]
 
     # Create a radio button for model provider
     model_provider = st.radio("Select Model Provider:", [
-                              "OpenAI", "Gemini"], key="model_provider")
+                              "OpenAI", "Gemini", "Anthropic"], key="model_provider")
 
     # Show models based on selected provider
     if model_provider == "OpenAI":
@@ -1062,12 +1090,18 @@ with st.sidebar:
         if selected_model != st.session_state.selected_model:
             st.warning(
                 "Note: Switching to OpenAI models may affect the output quality and cost.")
-    else:  # Gemini
+    elif model_provider == "Gemini":
         selected_model = st.selectbox(
             "Choose Gemini Model:", google_models, key="selected_model")
         if selected_model != st.session_state.selected_model:
             st.warning(
                 "Note: Switching to Gemini models may affect the output quality and cost.")
+    else:  # Anthropic
+        selected_model = st.selectbox(
+            "Choose Anthropic Model:", anthropic_models, key="selected_model")
+        if selected_model != st.session_state.selected_model:
+            st.warning(
+                "Note: Switching to Anthropic models may affect the output quality and cost.")
 
     st.markdown("---")  # Add a divider line
 
