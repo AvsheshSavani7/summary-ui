@@ -719,6 +719,10 @@ def get_model_config():
                 "model": "gemini-2.5-flash",
                 "temperature": 0
             },
+            "Gemini 2.5 Pro": {
+                "model": "gemini-2.5-pro",
+                "temperature": 0
+            },
             "Gemini 1.5 Pro": {
                 "model": "gemini-1.5-pro",
                 "temperature": 0
@@ -1079,7 +1083,8 @@ with st.sidebar:
 
     # Group models by provider
     openai_models = ["GPT-4", "GPT-4.1", "GPT-4o", "GPT-3.5 Turbo"]
-    google_models = ["Gemini 2.0 Flash", "Gemini 2.5 Flash", "Gemini 1.5 Pro"]
+    google_models = ["Gemini 2.0 Flash", "Gemini 2.5 Flash",
+                     "Gemini 2.5 Pro", "Gemini 1.5 Pro"]
     anthropic_models = ["Claude Opus 4.5", "Claude Opus 4.1", "Claude Opus 4",
                         "Claude Sonnet 4", "Claude Sonnet 3.7", "Claude Haiku 3.5"]
 
