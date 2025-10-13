@@ -12,14 +12,24 @@ pip install -r requirements.txt
 2. Set up environment variables:
    Create a `.env` file in the project root with your API keys:
    ```
+   # AI Model API Keys
    OPENAI_API_KEY=your_openai_api_key_here
    GEMINI_API_KEY=your_gemini_api_key_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   
+   # Configuration Mode: Set to 'true' for local development, 'false' for production (S3)
+   USE_LOCAL_CONFIGS=false
+   
+   # AWS S3 Configuration (only needed when USE_LOCAL_CONFIGS=false)
    AWS_ACCESS_KEY_ID=your_aws_access_key
    AWS_SECRET_ACCESS_KEY=your_aws_secret_key
    AWS_REGION=your_aws_region
    AWS_S3_BUCKET=your_s3_bucket_name
    ```
+
+   **Configuration Modes:**
+   - **Local Mode** (`USE_LOCAL_CONFIGS=true`): Reads and writes config files from the local `clause_configs` directory. Use this for development and testing.
+   - **Production Mode** (`USE_LOCAL_CONFIGS=false`): Reads and writes config files from AWS S3. Use this for production deployment.
 
 3. Set up Google Drive API (optional):
    - Go to the [Google Cloud Console](https://console.cloud.google.com/)

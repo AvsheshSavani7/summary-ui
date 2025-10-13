@@ -23,7 +23,7 @@ BEST_EFFORTS_CLAUSES = {
 
         ],
         "prompt_template": (
-            "You are a legal and finance analyst summarizing M&A contract terms.:\n\n"
+            "You are a legal and finance analyst summarizing M&A contract terms.:\n\n111"
             "Write a single concise sentence summarizing the divestiture cap for the target based on the data below. Use professional tone and precise legal language.\n"
             "- Target Divestiture Notes: {target_notes}\n"
             "Write one single concise sentence, that explains the divestiture cap as it applies to the buyer and the buyer's businesses. "
