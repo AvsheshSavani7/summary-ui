@@ -26,14 +26,21 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-# Configure AWS S3
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-    region_name=os.getenv('AWS_REGION')
-)
-S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+# Check if we should use local configs or S3
+USE_LOCAL_CONFIGS = os.getenv('USE_LOCAL_CONFIGS', 'false').lower() == 'true'
+
+# Configure AWS S3 (only if not using local configs)
+if not USE_LOCAL_CONFIGS:
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+        region_name=os.getenv('AWS_REGION')
+    )
+    S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+else:
+    s3_client = None
+    S3_BUCKET = None
 
 # Configure API keys for different providers
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -493,6 +500,29 @@ def get_json_files():
         return []
 
 
+def read_config_from_local(config_name):
+    """Read a config file from local directory"""
+    try:
+        config_path = os.path.join("clause_configs", f"{config_name}.py")
+
+        # Read the file content
+        with open(config_path, 'r') as f:
+            content = f.read()
+
+        # Create a temporary module namespace
+        namespace = {}
+        exec(content, namespace)
+
+        # Find the first uppercase variable which should be our config dictionary
+        config_dict = next((val for name, val in namespace.items()
+                            if name.isupper() and isinstance(val, dict)), {})
+
+        return config_dict
+    except Exception as e:
+        st.error(f"Error reading config from local: {str(e)}")
+        return {}
+
+
 def read_config_from_s3(config_name):
     """Read a config file from S3"""
     try:
@@ -517,6 +547,28 @@ def read_config_from_s3(config_name):
         return {}
 
 
+def read_config(config_name):
+    """Read a config file from local or S3 based on environment"""
+    if USE_LOCAL_CONFIGS:
+        return read_config_from_local(config_name)
+    else:
+        return read_config_from_s3(config_name)
+
+
+def get_config_files_from_local():
+    """List all config files from local directory"""
+    try:
+        config_dir = "clause_configs"
+        config_files = []
+        for file in os.listdir(config_dir):
+            if file.endswith("_config.py") and not file.startswith("__"):
+                config_files.append(file[:-3])  # Remove .py extension
+        return sorted(config_files)
+    except Exception as e:
+        st.error(f"Error listing configs from local: {str(e)}")
+        return []
+
+
 def get_config_files_from_s3():
     """List all config files in S3"""
     try:
@@ -536,6 +588,14 @@ def get_config_files_from_s3():
         return []
 
 
+def get_config_files():
+    """List all config files from local or S3 based on environment"""
+    if USE_LOCAL_CONFIGS:
+        return get_config_files_from_local()
+    else:
+        return get_config_files_from_s3()
+
+
 def split_prompt_template(template):
     # Split by newlines while preserving them
     lines = template.split('\n')
@@ -545,13 +605,125 @@ def split_prompt_template(template):
     return lines, dynamic_values
 
 
-def get_config_files():
-    config_dir = "clause_configs"
-    config_files = []
-    for file in os.listdir(config_dir):
-        if file.endswith("_config.json") and not file.startswith("__"):
-            config_files.append(file[:-5])  # Remove .json extension
-    return sorted(config_files)
+def save_config_changes_to_local(config_name, edited_templates):
+    """Save changes back to local file using Python format"""
+    try:
+        logger.info(
+            f"Debug: Attempting to save changes to local for {config_name}")
+        logger.info(f"Debug: Edited templates: {edited_templates}")
+
+        # First read the existing file from local
+        config_path = os.path.join("clause_configs", f"{config_name}.py")
+        with open(config_path, 'r') as f:
+            content = f.read()
+        logger.info("Debug: Successfully read existing file from local")
+
+        # Create a temporary module namespace
+        namespace = {}
+        exec(content, namespace)
+        logger.info("Debug: Successfully executed existing content")
+
+        # Find the config dictionary and its name
+        config_var_name = next((name for name in namespace if name.isupper(
+        ) and isinstance(namespace[name], dict)), None)
+        if not config_var_name:
+            st.error("Could not find config dictionary in module")
+            logger.error("Could not find config dictionary in module")
+            return False
+
+        logger.info(f"Debug: Found config variable name: {config_var_name}")
+        config_dict = namespace[config_var_name]
+
+        # Update the prompt_template, format_style, and max_words in the dictionary
+        for key, new_template in edited_templates.items():
+            if key in config_dict:
+                config_dict[key]['prompt_template'] = new_template
+                logger.info(f"Debug: Updated template for {key}")
+
+                # Update format_style if it was edited
+                if key in st.session_state.edited_format_styles:
+                    config_dict[key]['format_style'] = st.session_state.edited_format_styles[key]
+                    logger.info(f"Debug: Updated format_style for {key}")
+
+                # Update max_words if it was edited
+                if key in st.session_state.edited_max_words:
+                    config_dict[key]['max_words'] = st.session_state.edited_max_words[key]
+                    logger.info(f"Debug: Updated max_words for {key}")
+            else:
+                error_msg = f"Warning: Key {key} not found in config"
+                st.error(error_msg)
+                logger.error(error_msg)
+                return False
+
+        # Create the new file content
+        file_content = [
+            "# Auto-generated config file",
+            f"{config_var_name} = {{"
+        ]
+
+        # Process each template
+        for i, (key, value) in enumerate(config_dict.items()):
+            # Start template entry
+            file_content.append(f'    "{key}": {{')
+
+            # Process each field in the template
+            field_lines = []
+            for field_key, field_value in value.items():
+                if field_key == 'prompt_template':
+                    # Handle multi-line prompt template
+                    field_lines.append(
+                        f'        "prompt_template": """\n{field_value}\n"""')
+                elif isinstance(field_value, str):
+                    field_lines.append(
+                        f'        "{field_key}": "{field_value}"')
+                elif isinstance(field_value, bool):
+                    # Keep as Python bool (True/False)
+                    field_lines.append(
+                        f'        "{field_key}": {field_value}')
+                elif isinstance(field_value, (int, float)):
+                    field_lines.append(f'        "{field_key}": {field_value}')
+                elif field_value is None:
+                    field_lines.append(f'        "{field_key}": None')
+                elif isinstance(field_value, (list, dict)):
+                    # Use repr for lists and dicts to maintain Python syntax
+                    field_lines.append(
+                        f'        "{field_key}": {repr(field_value)}')
+                else:
+                    field_lines.append(
+                        f'        "{field_key}": {repr(field_value)}')
+
+            # Join fields with commas
+            file_content.append(',\n'.join(field_lines))
+
+            # Close template entry
+            if i < len(config_dict) - 1:
+                file_content.append('    },')
+            else:
+                file_content.append('    }')
+
+        # Close main dictionary
+        file_content.append("}")
+
+        # Join all lines with proper newlines
+        final_content = '\n'.join(file_content)
+        logger.info("Debug: Generated new file content")
+
+        # Write the modified content back to local file
+        logger.info(f"Debug: Attempting to write to local file")
+        try:
+            with open(config_path, 'w') as f:
+                f.write(final_content)
+            logger.info(f"Debug: Save completed successfully")
+            return True
+        except Exception as write_error:
+            logger.error(f"Error writing to local file: {str(write_error)}")
+            raise
+
+    except Exception as e:
+        error_msg = f"Error saving changes to local: {str(e)}"
+        st.error(error_msg)
+        logger.error(error_msg)
+        return False
 
 
 def save_config_changes_to_s3(config_name, edited_templates):
@@ -681,6 +853,14 @@ def save_config_changes_to_s3(config_name, edited_templates):
         st.error(error_msg)
         logger.error(error_msg)
         return False
+
+
+def save_config_changes(config_name, edited_templates):
+    """Save changes to local or S3 based on environment"""
+    if USE_LOCAL_CONFIGS:
+        return save_config_changes_to_local(config_name, edited_templates)
+    else:
+        return save_config_changes_to_s3(config_name, edited_templates)
 
 
 def get_model_config():
@@ -928,7 +1108,7 @@ def on_save_click():
         logger.info(f"Using save data: {save_data}")
 
         # Attempt to save
-        success = save_config_changes_to_s3(
+        success = save_config_changes(
             save_data['config'],
             {save_data['template']: save_data['content']}
         )
@@ -1142,12 +1322,12 @@ with st.sidebar:
     # Config File Selection (Step 2)
     st.markdown('<p class="smaller-font"><u>3. Select Config File</u></p>',
                 unsafe_allow_html=True)
-    config_files = get_config_files_from_s3()
+    config_files = get_config_files()
     selected_config = st.selectbox("Choose a config file:", config_files)
 
     # Template Selection (Step 3)
     if selected_config and json_data:
-        st.session_state.config_dict = read_config_from_s3(selected_config)
+        st.session_state.config_dict = read_config(selected_config)
         st.markdown('<p class="smaller-font"><u>4. Select Template to Edit</u></p>',
                     unsafe_allow_html=True)
         # Create template options with summary_type prefix
