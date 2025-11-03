@@ -1,3 +1,4 @@
+from pinecone_utils import PineconeSectionFetcher
 import streamlit as st
 import os
 import json
@@ -78,6 +79,13 @@ if 'selected_model' not in st.session_state:
 
 if 'config_dict' not in st.session_state:
     st.session_state.config_dict = None
+
+# Add session state variables for JSON file and Pinecone deal ID
+if 'selected_json_file' not in st.session_state:
+    st.session_state.selected_json_file = None
+
+if 'pinecone_deal_id' not in st.session_state:
+    st.session_state.pinecone_deal_id = None
 
 # Add new session state variables for format_style and max_words
 if 'edited_format_styles' not in st.session_state:
@@ -488,16 +496,60 @@ def load_json_file(file_path):
 
 
 def get_json_files():
+    """Get JSON files and their associated Pinecone deal IDs"""
     json_dir = "simplifyJson"
     json_files = []
+    # Mapping of JSON file names (case-insensitive, without extension) to Pinecone deal IDs
+    file_to_deal_id = {
+        "Altair_Engineering_Inc": "68ada8914a6006a0946ec7fe",
+        "Anywhere_Real_Estate_Inc": "68d14ef8530f016f4a3af0c2",
+        "Azek": "68184d52478abf06ec1a28ec",
+        "Catalent": "68f1ca6d97173821e21c53c2",
+        "Celgene": "68412f11812d9ee0838c6fd4",
+        "ChampionX": "6836dbf3caf74b95439aeeba",
+        "Chart_Industries_INC": "6893080806e0a61f18b754b0",
+        "Cowen_INC": "684c103ed63c047158d2ffe1",
+        "CyberArk_Software_Ltd": "6895ab1c06e0a61f18b75e17",
+        "ITEOS_THERAPEUTICS_INC": "6880b58cbf590fabd5f85359",
+        "Juniper_Networks_Inc": "68ac4a254a6006a0946ec3bb",
+        "Nippon": "684054f02e2e5aa5468773db",
+        "Olo_Inc": "68998bd106e0a61f18b767c3",
+        "SiliconMotion": "682f252ef21b9fca8e1d0530",
+        "Spirit": "682f00def21b9fca8e1d04fe",
+        "STAAR_Surgical_Company": "6893561406e0a61f18b756a0",
+        "Steelcase_INC": "6893017806e0a61f18b754af",
+        "Zimvie_INC": "6880af3bbf590fabd5f85358"
+
+    }
+
     try:
         for file in os.listdir(json_dir):
             if file.endswith(".json"):
                 json_files.append(file)
-        return sorted(json_files)
+
+        # Create a mapping dictionary: {filename: deal_id}
+        file_id_mapping = {}
+        for file in sorted(json_files):
+            # Get filename without extension and convert to lowercase for matching
+            file_key = file.replace(".json", "")
+            # Try to match with various patterns (underscores, spaces, etc.)
+            # First try exact match
+            deal_id = file_to_deal_id.get(file_key)
+            # If no exact match, try removing underscores
+            if not deal_id:
+                file_key_no_underscore = file_key.replace("_", "")
+                deal_id = file_to_deal_id.get(file_key_no_underscore)
+            # If still no match, try with spaces
+            if not deal_id:
+                file_key_no_spaces = file_key.replace(" ", "")
+                deal_id = file_to_deal_id.get(file_key_no_spaces)
+
+            file_id_mapping[file] = deal_id
+
+        return sorted(json_files), file_id_mapping
     except Exception as e:
         st.error(f"Error accessing simplifyJson directory: {str(e)}")
-        return []
+        return [], {}
 
 
 def read_config_from_local(config_name):
@@ -949,6 +1001,10 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
         summary_outputs = []
         prompt_logs = []  # Store prompts for logging
 
+        # Get Pinecone deal ID from session state (if available)
+        pinecone_deal_id = st.session_state.get('pinecone_deal_id')
+        print(f"pinecone_deal_id: {pinecone_deal_id}")
+
         # Get model configuration
         model_config = get_model_config()
 
@@ -962,6 +1018,18 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
                 selected_template: config_dict[selected_template]}
         else:
             templates_to_process = config_dict
+
+        fetcher = PineconeSectionFetcher()
+        all_chunks = fetcher.get_all_chunks_for_deal(pinecone_deal_id)
+        # print(f"all_chunks: {len(all_chunks)} {all_chunks[:1]}")
+
+        definitions_array = fetcher.extract_definitions_from_chunks(
+            all_chunks, max_workers=8)
+        # print(
+        #     f"definitions_array: {len(definitions_array)} {definitions_array[:1]}")
+
+        preamble_data = fetcher.extract_preamble_from_chunks(all_chunks)
+        # print(f"preamble_data: {preamble_data}")
 
         for clause_name, clause_config in templates_to_process.items():
             # Create a copy of the clause config to avoid modifying the original
@@ -982,9 +1050,36 @@ def run_summary_generation(json_data, config_dict, selected_template=None):
             # Add model configuration to clause_config
             clause_config['model_config'] = model_config
 
-            result = process_clause_config(clause_config, json_data)
+            # Pass Pinecone deal ID if available
+            try:
+                result = process_clause_config(
+                    clause_config, json_data, definitions_array, preamble_data, deal_id=pinecone_deal_id)
+            except Exception as e:
+                error_msg = f"Error processing clause {clause_name}: {str(e)}"
+                logger.error(error_msg)
+                st.error(error_msg)
+                result = {
+                    "output": f"[Error: {str(e)}]",
+                    "references": [],
+                    "used_prompt": "Error occurred during processing",
+                    "summary_type": clause_config.get("summary_type"),
+                    "summary_rank": clause_config.get("summary_rank", 999)
+                }
 
             if result["output"] and result["output"] != "No output generated.":
+                # Check if output contains API error
+                if result["output"].startswith("[API Error") or result["output"].startswith("[Error"):
+                    # Show error message prominently
+                    error_display = result['output']
+                    # Extract just the error message if it's in brackets
+                    if error_display.startswith("[") and "]" in error_display:
+                        error_display = error_display[1:error_display.find(
+                            "]")]
+                    st.error(
+                        f"⚠️ **API Error for {clause_name}:** {error_display}")
+                    # Also log for debugging
+                    logger.error(
+                        f"API Error for {clause_name}: {result['output']}")
                 if (result.get("summary_type", "").lower() == "concise" and
                         clause_config.get("view_prompt", True) is False):
                     continue
@@ -1297,27 +1392,51 @@ with st.sidebar:
     # JSON File Selection (Step 1)
     st.markdown('<p class="smaller-font"><u>2. Select JSON Source</u></p>',
                 unsafe_allow_html=True)
-    json_source = st.radio("Choose JSON source:", [
-                           "Upload JSON", "Select Existing JSON"])
+    # json_source = st.radio("Choose JSON source:", [
+    #                        "Upload JSON", "Select Existing JSON"])
 
     json_data = None
-    if json_source == "Upload JSON":
-        uploaded_file = st.file_uploader("Upload JSON file", type=['json'])
-        if uploaded_file:
-            json_data = json.load(uploaded_file)
-            st.success("✅ JSON file loaded successfully!")
+    # Commented out Upload JSON option
+    # if json_source == "Upload JSON":
+    #     uploaded_file = st.file_uploader("Upload JSON file", type=['json'])
+    #     if uploaded_file:
+    #         json_data = json.load(uploaded_file)
+    #         st.success("✅ JSON file loaded successfully!")
+    # else:
+
+    # Show dropdown for existing JSON files
+    json_files, file_id_mapping = get_json_files()
+    if json_files:
+        # Default to first file
+        default_index = 0
+        if st.session_state.selected_json_file and st.session_state.selected_json_file in json_files:
+            default_index = json_files.index(
+                st.session_state.selected_json_file)
+
+        selected_json = st.selectbox(
+            "Choose a JSON file:", json_files, index=default_index, key="json_file_selectbox")
+
+        if selected_json:
+            # Always update session state and Pinecone deal ID based on current selection
+            # Get the deal ID directly from mapping for the currently selected file
+            current_deal_id = file_id_mapping.get(selected_json)
+
+            # Always update session state to ensure it's in sync with current selection
+            st.session_state.selected_json_file = selected_json
+            st.session_state.pinecone_deal_id = current_deal_id
+
+            # Load JSON file
+            json_path = os.path.join("simplifyJson", selected_json)
+            json_data = load_json_file(json_path)
+
+            # Display the Pinecone deal ID (always get fresh from mapping)
+            if current_deal_id:
+                st.success(
+                    f"(ID: {current_deal_id})")
+            else:
+                st.success("(No Pinecone Deal ID mapped)")
     else:
-        # Show dropdown for existing JSON files
-        json_files = get_json_files()
-        if json_files:
-            selected_json = st.selectbox("Choose a JSON file:", json_files)
-            if selected_json:
-                json_path = os.path.join("simplifyJson", selected_json)
-                json_data = load_json_file(json_path)
-                if json_data:
-                    st.success("✅ JSON file loaded successfully!")
-        else:
-            st.warning("No JSON files found in simplifyJson directory")
+        st.warning("No JSON files found in simplifyJson directory")
 
     # Config File Selection (Step 2)
     st.markdown('<p class="smaller-font"><u>3. Select Config File</u></p>',
