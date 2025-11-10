@@ -391,6 +391,16 @@
         "answer": "Not found",
         "clause_text": "",
         "reference_section": ""
+      },
+      "parent_go_shop_included": {
+        "answer": false,
+        "clause_text": "Except as permitted by this Section 5.03, during the Pre-Closing Period, the Company shall, and shall cause the Company Subsidiaries to, and shall direct its Representatives to, cease any direct or indirect solicitation, encouragement, discussion, or negotiation with any Person that may be ongoing with respect to an Acquisition Proposal.",
+        "reference_section": "Section 5.03 (a)"
+      },
+      "parent_go_shop_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "buyer_diligence_access": {
@@ -415,6 +425,28 @@
         "answer": "The agreement imposes procedural and timing-based restrictions on how the Company may change its recommendation.",
         "clause_text": "The Company shall have given Parent prior written notice of its intention to make a Company Adverse Change Recommendation or terminate this Agreement pursuant to Section 8.01(g) at least five (5) days prior to making any such Company Adverse Change Recommendation or termination (a 'Determination Notice').",
         "reference_section": "Section 6.01 (b) (i)"
+      }
+    },
+    "right_to_negotiate": {
+      "right_to_negotiate_included": {
+        "answer": true,
+        "clause_text": "The Company shall have given Parent the five (5) day period after the delivery of a Determination Notice to propose revisions to the terms of this Agreement or make another proposal, and shall have made its Representatives reasonably available to negotiate in good faith with Parent (to the extent Parent desires to negotiate) with respect to such proposed revisions or other proposal, if any.",
+        "reference_section": "Section 6.01 (b) (i) (2)"
+      },
+      "right_to_negotiate_explanation": {
+        "answer": "The merger agreement requires the Parent to give the Company an initial consultation or negotiation period before changing its recommendation or terminating the agreement.",
+        "clause_text": "The Company shall have given Parent prior written notice of its intention to make a Company Adverse Change Recommendation or terminate this Agreement pursuant to Section 8.01(g) at least five (5) days prior to making any such Company Adverse Change Recommendation or termination (a 'Determination Notice')... the Company shall have given Parent the five (5) day period after the delivery of a Determination Notice to propose revisions to the terms of this Agreement or make another proposal, and shall have made its Representatives reasonably available to negotiate in good faith with Parent...",
+        "reference_section": "Section 6.01 (b) (i)"
+      },
+      "right_to_negotiate_amended_included": {
+        "answer": false,
+        "clause_text": "The provisions of this Section 6.01(b)(i) shall also apply to any material amendment to any Acquisition Proposal, which shall require a new Determination Notice and compliance with clause (D) above, except that, in each case, the references to five (5) days shall be deemed to be three (3) days;",
+        "reference_section": "Section 6.01 (b) (i)"
+      },
+      "right_to_negotiate_amended_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     }
   },
@@ -848,9 +880,19 @@
         "reference_section": "Section 4.04"
       },
       "reverse_termination_fee_shareholder_approval_failure": {
-        "answer": "Not specified",
-        "clause_text": "Notwithstanding anything to the contrary in this Agreement, if Parent or the Company shall have terminated this Agreement pursuant to Section 8.01(b) or Section 8.01(c) (but only to the extent the applicable Legal Restraint relates to Requisite Regulatory Approvals or otherwise in connection with Antitrust Laws) and, at the time of such termination, (i) one or more of the conditions set forth in Section 7.01(b), Section 7.01(c), Section 7.03(e) or Section 7.03(f) (in the case of Section 7.01(b) and Section 7.03(e), but only to the extent the applicable Legal Restraint relates to Requisite Regulatory Approvals or otherwise in connection with Antitrust Laws) has not been satisfied or waived, (ii) all of the other conditions set forth in Section 7.01 and Section 7.03 have been satisfied or waived (other than any such conditions that by their nature are to be satisfied at the Closing (if such conditions would be satisfied or validly waived were the Closing to occur at such time)) and (iii) no breach by the Company of its obligations under Section 6.02 has principally caused the failure of the satisfaction of all or any of the conditions listed in clause (i) of this Section 8.03(b), then Parent shall pay, by wire transfer of immediately available funds to an account designated by the Company, a fee of $584,400,000 in cash (the \"Parent Termination Fee\") within three (3) business days after such termination; it being understood that in no event shall Parent be required to pay the Parent Termination Fee on more than one occasion.",
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "reverse_termination_fee_shareholder_approval_failure_exists_supirior_proposal": {
+        "answer": false,
+        "clause_text": "Notwithstanding anything to the contrary in this Agreement, if Parent or the Company shall have terminated this Agreement pursuant to Section 8.01(b) or Section 8.01(c) (but only to the extent the applicable Legal Restraint relates to Requisite Regulatory Approvals or otherwise in connection with Antitrust Laws)...",
         "reference_section": "Section 8.03 (b)"
+      },
+      "reverse_termination_fee_shareholder_approval_failure_supirior_proposal": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "termination_rights": {
@@ -933,17 +975,17 @@
     },
     "extend_or_terminate_limitation_due_to_breach": {
       "extend_or_terminate_limitation_due_to_breach": {
-        "answer": "Not found",
-        "clause_text": "",
-        "reference_section": ""
+        "answer": "The agreement includes a provision that a party cannot terminate the agreement if their own material breach was the primary cause of the failure to close.",
+        "clause_text": "This Agreement may be terminated and the Merger abandoned at any time prior to the Effective Time, whether before or after the Required Company Stockholder Vote: (a) by the mutual written consent of the Company and Parent; (b) by either the Company or Parent if (i) the Effective Time shall not have occurred on or before February 5, 2025 (as may be extended pursuant to the following proviso, the \"End Date\"); provided that such date shall automatically be extended by three (3) months on four (4) occasions (the date of such occasion, a \"Test Date\") if, as of such date (or a subsequent Test Date), all conditions set forth in Section 7.01, Section 7.02, and Section 7.03 shall have been satisfied or waived (other than (x) any such conditions that by their nature are to be satisfied at the Closing (if such conditions would be satisfied or validly waived were the Closing to occur at such time) and (y) any of the conditions set forth in Section 7.01(b), Section 7.01(c), Section 7.03(e) or Section 7.03(f) (in the case of Section 7.01(b) or Section 7.03(e), only to the extent the applicable Legal Restraint relates to Requisite Regulatory Approvals or otherwise in connection with Antitrust Laws); provided further that, notwithstanding the foregoing, (1) if as of any Test Date, the condition set forth in Section 7.01(a) has not been satisfied solely due to the inability of the Company to file the Proxy Statement due to any relevant Company SEC Document not being filed in a timely manner pursuant to applicable Law, such automatic extension shall still occur so long as the other conditions to the automatic extension set forth in the first proviso are satisfied and (2) if, solely on the first Test Date and the second Test Date, all conditions set forth in Section 7.01, Section 7.02, and Section 7.03 shall have been satisfied or waived (other than (x) any such conditions that by their nature are to be satisfied at the Closing (if such conditions would be satisfied or validly waived were the Closing to occur at such time) and (y) the condition set forth in Section 7.01(a) only if such condition has not been satisfied solely due to the inability of the Company to file the Proxy Statement due to any relevant Company SEC Document not being filed in a timely manner pursuant to applicable Law), such automatic extension shall still occur and (ii) the Party seeking to terminate this Agreement pursuant to this Section 8.01(b) shall not have breached or failed to perform in any material respect its obligations under this Agreement in any manner that shall have principally caused the failure to consummate the Merger on or before such Test Date.",
+        "reference_section": "Section 8.01"
       }
     }
   },
   "ordinary_course": {
     "company_ordinary_course_covenant": {
       "company_conduct_covenant_summary": {
-        "answer": "During the Pre-Closing Period, the Company is required to use commercially reasonable efforts to conduct its business in all material respects in the ordinary course and to preserve its business organization and relationships, except as permitted by the Agreement or with Parent's consent.",
-        "clause_text": "During the Pre-Closing Period, except (w) as required or otherwise permitted or contemplated under this Agreement or as required by applicable Law, (x) with the written consent of Parent (which consent shall not be unreasonably withheld, conditioned, or delayed), (y) for any action taken reasonably and in good faith in response to COVID-19 or COVID-19 Measures or (z) as set forth in Section 5.02 of the Company Disclosure Schedule, the Company shall, and shall cause the Company Subsidiaries to, use (i) commercially reasonable efforts to conduct its business in all material respects in the ordinary course and (ii) use commercially reasonable efforts to preserve intact its current business organization and to preserve its relationships with key employees and others having significant business dealings with the Company or any Company Subsidiary;",
+        "answer": "During the Pre-Closing Period, the Company is required to use commercially reasonable efforts to conduct its business in all material respects in the ordinary course and to preserve its business organization and relationships, except as required by law, with Parent's consent, in response to COVID-19, or as set forth in the Company Disclosure Schedule. Specific exceptions include actions related to dividends, capital stock transactions, and certain business operations, among others, as detailed in Section 5.02(b).",
+        "clause_text": "During the Pre-Closing Period, except (w) as required or otherwise permitted or contemplated under this Agreement or as required by applicable Law, (x) with the written consent of Parent (which consent shall not be unreasonably withheld, conditioned, or delayed), (y) for any action taken reasonably and in good faith in response to COVID-19 or COVID-19 Measures or (z) as set forth in Section 5.02 of the Company Disclosure Schedule, the Company shall, and shall cause the Company Subsidiaries to, use (i) commercially reasonable efforts to conduct its business in all material respects in the ordinary course and (ii) use commercially reasonable efforts to preserve intact its current business organization and to preserve its relationships with key employees and others having significant business dealings with the Company or any Company Subsidiary; provided that (A) no action by the Company or any of its Subsidiaries to the extent expressly permitted by an exception to any of Section 5.02(b) shall be a breach of this sentence and (B) the Company's or any of its Subsidiaries' failure to take any action prohibited by any of Section 5.02(b) shall not be deemed to be a breach of this Section 5.02(a).",
         "reference_section": "Section 5.02 (a)"
       }
     },

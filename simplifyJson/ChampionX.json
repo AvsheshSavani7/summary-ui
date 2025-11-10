@@ -376,6 +376,16 @@
         "answer": "Not found",
         "clause_text": "",
         "reference_section": ""
+      },
+      "parent_go_shop_included": {
+        "answer": false,
+        "clause_text": "Except as permitted by this Section 6.4, from the date hereof and prior to the earlier of the Effective Time and the Termination Date, the Company shall not, and shall cause its Subsidiaries and its and their respective directors, officers, employees not to, and shall direct its and their other Representatives acting on its and their behalf not to, directly or indirectly: (i) solicit, initiate, seek or knowingly encourage or knowingly facilitate (including by way of furnishing non-public information) any proposal or offer or any inquiries regarding the making or submission of any proposal or offer...",
+        "reference_section": "Section 6.4 (a)"
+      },
+      "parent_go_shop_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "buyer_diligence_access": {
@@ -400,6 +410,28 @@
         "answer": "The agreement imposes procedural and timing-based restrictions on how the Company may change its recommendation.",
         "clause_text": "The Company provides Sodium four (4) business days prior written notice of its intention to take such action, which notice shall include the information with respect to such Company Superior Offer that is specified in Section 6.4(b), (B) after providing such notice and prior to making such Company Change of Recommendation in connection with a Company Superior Offer, the Company shall negotiate in good faith with Sodium during such four (4) business day period (to the extent that Sodium desires to negotiate) to make such revisions to the terms of this Agreement.",
         "reference_section": "Section 6.4 (g)"
+      }
+    },
+    "right_to_negotiate": {
+      "right_to_negotiate_included": {
+        "answer": false,
+        "clause_text": "The provided excerpts do not contain any clauses that require the Parent to consult or negotiate with the Company before making changes to recommendations or agreements.",
+        "reference_section": "Section 6.4"
+      },
+      "right_to_negotiate_explanation": {
+        "answer": "The merger agreement requires the Parent to give the Company an initial consultation or negotiation period before the Parent may change its recommendation, terminate the agreement, or enter into a Parent Superior Proposal.",
+        "clause_text": "The Company provides Sodium four (4) business days prior written notice of its intention to take such action, which notice shall include the information with respect to such Company Superior Offer that is specified in Section 6.4(b), (B) after providing such notice and prior to making such Company Change of Recommendation in connection with a Company Superior Offer, the Company shall negotiate in good faith with Sodium during such four (4) business day period (to the extent that Sodium desires to negotiate) to make such revisions to the terms of this Agreement, such that the Company Acquisition Proposal ceases to constitute a Company Superior Offer.",
+        "reference_section": "Section 6.4 (g)"
+      },
+      "right_to_negotiate_amended_included": {
+        "answer": false,
+        "clause_text": "The provided excerpts do not include any language indicating an additional consultation or negotiation period for amended Parent Superior Proposals.",
+        "reference_section": "Section 6.4"
+      },
+      "right_to_negotiate_amended_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     }
   },
@@ -831,13 +863,23 @@
     "reverse_termination_fee_shareholder_approval": {
       "reverse_termination_fee_shareholder_approval_failure_exists": {
         "answer": false,
-        "clause_text": "The payment of the Company Termination Fee to Sodium pursuant to this Section 8.3 shall be the sole and exclusive monetary remedy available to Sodium, Sodium US or Merger Sub or any of their Affiliates in connection with this Agreement and the Transactions in any circumstance in which the Company Termination Fee is payable hereunder.",
+        "clause_text": "The provided sections do not mention a Reverse Termination Fee related to the failure of obtaining Parent Shareholder Approval.",
         "reference_section": "Section 8.3"
       },
       "reverse_termination_fee_shareholder_approval_failure": {
-        "answer": "Not specified",
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "reverse_termination_fee_shareholder_approval_failure_exists_supirior_proposal": {
+        "answer": false,
         "clause_text": "If this Agreement is terminated (i) by Sodium or the Company pursuant to Section 8.1(b) [End Date] and at the time of, or prior to, such termination, each of the conditions set forth in Article VII shall have been satisfied (other than the conditions set forth in Section 7.1(c) [Absence of Mutual Legal Restraint] (excluding any Mutual Legal Restraint relating to CFIUS) or Section 7.1(d) [HSR Act and Regulatory Approvals]), (ii) by Sodium or the Company pursuant to Section 8.1(c) [Termination for Mutual Legal Restraint] and at the time of, or prior to, such termination, each of the conditions set forth in Article VII shall have been satisfied (other than the conditions set forth in Section 7.1(c) [Absence of Mutual Legal Restraint] (excluding any Mutual Legal Restraint relating to CFIUS) or Section 7.1(d) [HSR Act and Regulatory Approvals]) or (iii) by Sodium pursuant to Section 8.1(b) if it does not exercise its right to an Extension Election or pursuant to Section 8.1(h), then, in the case of clause (i), (ii) or (iii) Sodium shall pay to the Company, within three (3) business days after the date of termination, the Sodium Termination Fee, by wire transfer of same day federal funds to the account specified by the Company.",
         "reference_section": "Section 8.3 (d)"
+      },
+      "reverse_termination_fee_shareholder_approval_failure_supirior_proposal": {
+        "answer": "326600000",
+        "clause_text": "Sodium Termination Fee means $326,600,000.",
+        "reference_section": "Section 9.16"
       }
     },
     "termination_rights": {
@@ -917,25 +959,25 @@
     },
     "extend_or_terminate_limitation_due_to_breach": {
       "extend_or_terminate_limitation_due_to_breach": {
-        "answer": "Not found",
-        "clause_text": "",
-        "reference_section": ""
+        "answer": "Neither the Company nor Sodium may rely, either as a basis for not consummating the Transactions or terminating this Agreement and abandoning the Transactions, on the failure of any condition set forth in Section 7.1, Section 7.2 or Section 7.3, as the case may be, to be satisfied if such failure was caused by such party's Willful Breach of any material provision of this Agreement.",
+        "clause_text": "Neither the Company nor Sodium may rely, either as a basis for not consummating the Transactions or terminating this Agreement and abandoning the Transactions, on the failure of any condition set forth in Section 7.1, Section 7.2 or Section 7.3, as the case may be, to be satisfied if such failure was caused by such party's Willful Breach of any material provision of this Agreement.",
+        "reference_section": "Section 7.4"
       }
     }
   },
   "ordinary_course": {
     "company_ordinary_course_covenant": {
       "company_conduct_covenant_summary": {
-        "answer": "The Company is required to conduct its business in the ordinary course and preserve its relationships with significant business partners during the interim period, subject to exceptions for legal requirements, written consent from Sodium, or as required by the Agreement.",
-        "clause_text": "From and after the date hereof until the earlier of the Effective Time and the Termination Date, and except (i) as may be required by applicable Law, (ii) as may be consented to in writing by Sodium (which consent shall not be unreasonably withheld, delayed or conditioned), (iii) as contemplated or required by this Agreement or (iv) as set forth in Section 6.1(a) of the Company Disclosure Schedule, the Company shall (A) conduct its business, and cause its Subsidiaries to conduct their business, in each case, in the ordinary course of business, and (B) preserve, and cause its Subsidiaries to preserve, their relationships with clients, customers, suppliers, distributors and creditors and other persons with which such entity has significant business relations, in the case of this clause (B), in all material respects.",
+        "answer": "The Company is required to conduct its business in the ordinary course and preserve its relationships with significant business partners during the interim period. Exceptions to this requirement include actions required by law, those consented to by Sodium, actions contemplated by the agreement, or as set forth in the Company Disclosure Schedule. Sodium's consent for deviations shall not be unreasonably withheld, delayed, or conditioned.",
+        "clause_text": "From and after the date hereof until the earlier of the Effective Time and the date, if any, on which this Agreement is terminated pursuant to Section 8.1 (the \"Termination Date\"), and except (i) as may be required by applicable Law, (ii) as may be consented to in writing by Sodium (which consent shall not be unreasonably withheld, delayed or conditioned), (iii) as contemplated or required by this Agreement or (iv) as set forth in Section 6.1(a) of the Company Disclosure Schedule, the Company shall (A) conduct its business, and cause its Subsidiaries to conduct their business, in each case, in the ordinary course of business, and (B) preserve, and cause its Subsidiaries to preserve, their relationships with clients, customers, suppliers, distributors and creditors and other persons with which such entity has significant business relations, in the case of this clause (B), in all material respects.",
         "reference_section": "Section 6.1 (a)"
       }
     },
     "parent_ordinary_course_covenant": {
       "parent_conduct_covenant_summary": {
-        "answer": "Not found",
-        "clause_text": "",
-        "reference_section": ""
+        "answer": "Sodium, Sodium US and Merger Sub shall conduct their business in the ordinary course of business and preserve their relationships with significant business partners, except as required by applicable Law, as consented to in writing by the Company, as contemplated or required by the Agreement, or as set forth in Section 6.2(a) of the Sodium Disclosure Schedule.",
+        "clause_text": "From and after the date hereof until the earlier of the Effective Time and the Termination Date, and except (i) as may be required by applicable Law, (ii) as expressly consented to in writing by the Company (which consent shall not be unreasonably withheld, delayed or conditioned), (iii) as may be contemplated or required by this Agreement or (iv) as set forth in Section 6.2(a) of the Sodium Disclosure Schedule, Sodium, Sodium US and Merger Sub shall (A) conduct their business, and cause their Subsidiaries to conduct their business, in each case, in the ordinary course of business, and (B) preserve, and cause its Subsidiaries to preserve, their relationships with clients, customers, suppliers, distributors and creditors and other persons with which such entity has significant business relations, in the case of this clause (B), in all material respects.",
+        "reference_section": "Section 6.2 (a)"
       }
     }
   },

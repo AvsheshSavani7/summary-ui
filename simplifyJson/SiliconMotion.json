@@ -89,11 +89,11 @@
       "clause_text": "",
       "reference_section": ""
     },
-     "required_regulatory_clearances": {
-        "answer": "HSR, SAMR",
-        "clause_text": "Any applicable waiting period, together with any extensions thereof, under the HSR Act shall have expired or been terminated. All waivers, consents, clearances, approvals and authorizations under the Regulatory Laws set forth on ‎Section 6.1(d) of the Company Disclosure Schedule with respect to the Transactions shall have been obtained and shall remain in full force and effect. Parent and the Company shall use their respective reasonable best efforts to respond as promptly as reasonably practicable to any inquiries or requests for additional information or documentary material received from any state attorney general, antitrust authority or other Governmental Entity, including the Federal Trade Commission (the \"FTC\"), Antitrust Division of the U.S. Department of Justice (the \"DOJ\") and the People's Republic of China's State Administration for Market Regulation (\"SAMR\") in connection with the matters in Section 5.6(a) and this Section 5.6(b).",
-        "reference_section": "Section 6.1"
-      }
+    "required_regulatory_clearances": {
+      "answer": "HSR, SAMR",
+      "clause_text": "Any applicable waiting period, together with any extensions thereof, under the HSR Act shall have expired or been terminated. All waivers, consents, clearances, approvals and authorizations under the Regulatory Laws set forth on ‎Section 6.1(d) of the Company Disclosure Schedule with respect to the Transactions shall have been obtained and shall remain in full force and effect. Parent and the Company shall use their respective reasonable best efforts to respond as promptly as reasonably practicable to any inquiries or requests for additional information or documentary material received from any state attorney general, antitrust authority or other Governmental Entity, including the Federal Trade Commission (the \"FTC\"), Antitrust Division of the U.S. Department of Justice (the \"DOJ\") and the People's Republic of China's State Administration for Market Regulation (\"SAMR\") in connection with the matters in Section 5.6(a) and this Section 5.6(b).",
+      "reference_section": "Section 6.1"
+    }
   },
   "material_adverse_effect": {
     "mae_carveout": {
@@ -377,6 +377,16 @@
         "answer": "Not found",
         "clause_text": "",
         "reference_section": ""
+      },
+      "parent_go_shop_included": {
+        "answer": false,
+        "clause_text": "From and after the date of this Agreement until the earlier of the Effective Time or the date, if any, on which this Agreement is terminated in accordance with Article 7, and except as otherwise permitted in this Agreement, the Company will not, and it will cause the Subsidiaries of the Company and its and their respective directors and officers, and the Company shall instruct its and its Subsidiaries' financial advisors, investment bankers, legal counsel and other Representatives on behalf of the Company not to: (i) solicit or initiate or knowingly assist, facilitate or encourage any inquiry, proposal or offer that constitutes or would be reasonably expected to lead to a Competing Proposal or engage in any discussions or negotiations with respect thereto...",
+        "reference_section": "Section 5.5 (a)"
+      },
+      "parent_go_shop_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "buyer_diligence_access": {
@@ -401,6 +411,28 @@
         "answer": "The agreement imposes procedural and timing-based restrictions on how the Company may change its recommendation.",
         "clause_text": "The Company has provided Parent with a written notice (a \"Company Notice\") of such determination stating that such notice constitutes a Company Notice, stating whether the Company Board intends to effect a Company Change of Recommendation or the Company intends to terminate this Agreement, and describing in reasonable detail the reason for such Company Change of Recommendation or termination; provided, that the sole action of giving such Company Notice and of the Company Board in authorizing and disclosing (to the extent legally required) such Company Notice shall not constitute a Company Change of Recommendation, a violation of this Section 5.5 or a termination of this Agreement, (iii) the Company has provided Parent with all agreements and documents, and a copy of all material written communications, relating to such Competing Proposal, (iv) during the period commencing on delivery of the Company Notice to Parent and ending at 5:00 p.m. Taiwan time on the date that is the fourth (4th) Business Day after such delivery, the Company has made its Representatives reasonably available for the purpose of engaging, and the Company has, engaged, in good faith discussions and negotiations with Parent and its Representatives (to the extent Parent desired to negotiate) regarding a possible amendment to this Agreement and has considered in good faith any written proposals made by Parent that if accepted by the Company would be binding upon Parent, and after taking account of Parent's proposals, if any, the Company Board again makes the determination set forth in Section 5.5(f)(i).",
         "reference_section": "Section 5.5 (f)"
+      }
+    },
+    "right_to_negotiate": {
+      "right_to_negotiate_included": {
+        "answer": false,
+        "clause_text": "This Agreement may be terminated, and the Merger and the other Transactions may be abandoned at any time prior to the Effective Time, whether before or (subject to the terms hereof) after receipt of the Company Shareholder Approval, by action taken or authorized by the board of directors of the terminating party or parties.",
+        "reference_section": "Section 7.1"
+      },
+      "right_to_negotiate_explanation": {
+        "answer": "The merger agreement requires the Parent to give the Company an initial consultation or negotiation period before the Parent may change its recommendation, terminate the agreement, or enter into a Parent Superior Proposal.",
+        "clause_text": "during the period commencing on delivery of the Company Notice to Parent and ending at 5:00 p.m. Taiwan time on the date that is the fourth (4th) Business Day after such delivery, the Company has made its Representatives reasonably available for the purpose of engaging, and the Company has, engaged, in good faith discussions and negotiations with Parent and its Representatives",
+        "reference_section": "Section 5.5 (f)"
+      },
+      "right_to_negotiate_amended_included": {
+        "answer": false,
+        "clause_text": "The document does not mention any requirement for an additional consultation or negotiation period after a Parent Superior Proposal is amended.",
+        "reference_section": "Section 5.5"
+      },
+      "right_to_negotiate_amended_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     }
   },
@@ -856,12 +888,22 @@
     "reverse_termination_fee_shareholder_approval": {
       "reverse_termination_fee_shareholder_approval_failure_exists": {
         "answer": false,
-        "clause_text": "The parties hereto agree that if this Agreement is terminated by Parent pursuant to Section 7.1(e) or the Company pursuant to Section 7.1(f), then the Company shall pay to Parent prior to or concurrently with such termination, in the case of a termination by the Company, or within two (2) Business Days thereafter, in the case of a termination by Parent, the Company Termination Fee.",
-        "reference_section": "Section 7.3 (a)"
+        "clause_text": "The parties hereto agree that (A) if this Agreement is terminated by Parent or the Company pursuant to (x) Section 7.1(c) ... then Parent shall pay to the Company ... the Parent Termination Fee.",
+        "reference_section": "Section 7.3"
       },
       "reverse_termination_fee_shareholder_approval_failure": {
-        "answer": "Not specified",
-        "clause_text": "The parties hereto agree that (A) if this Agreement is terminated by Parent or the Company pursuant to (x) Section 7.1(c) (but solely to the extent a court of competent jurisdiction or other Governmental Entity of competent jurisdiction shall have issued an Order pursuant to a Regulatory Law (and no other Law), adopted or caused to be effective any Law (but solely to the extent it is a Regulatory Law and no other Law) or taken any other action pursuant to a Regulatory Law (and no other Law), in each case, permanently restraining, enjoining or otherwise prohibiting, prior to the Effective Time, the consummation of the Merger, and such Order or other action shall have become final and non-appealable), or (y) Section 7.1(d), (B) at the time of such termination, all of the conditions in Article 6 other than Section 6.1(c) (solely with respect to any Regulatory Law or any Order issued pursuant to or in respect of any Regulatory Law) or 6.1(d) have been satisfied or are capable of being satisfied prior to Closing (other than conditions that by their nature can only be satisfied on the Closing Date), or have been waived by Parent and Merger Sub and the Company, as applicable, and (C) at the time of such termination the Company is not in material breach of any representation, warranty, covenant or other agreement of the Company set forth in this Agreement where such breach by the Company is the primary cause of the failure of any condition to this Agreement being satisfied, then Parent shall pay to the Company prior to or concurrently with such termination, in the case of a termination by Parent, or within two (2) Business Days thereafter, in the case of a termination by the Company, the Parent Termination Fee. The 'Parent Termination Fee' means one hundred sixty million dollars ($160,000,000).",
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "reverse_termination_fee_shareholder_approval_failure_exists_supirior_proposal": {
+        "answer": false,
+        "clause_text": "The parties hereto agree that (A) if this Agreement is terminated by Parent or the Company pursuant to (x) Section 7.1(c) (but solely to the extent a court of competent jurisdiction or other Governmental Entity of competent jurisdiction shall have issued an Order pursuant to a Regulatory Law (and no other Law), adopted or caused to be effective any Law (but solely to the extent it is a Regulatory Law and no other Law) or taken any other action pursuant to a Regulatory Law (and no other Law), in each case, permanently restraining, enjoining or otherwise prohibiting, prior to the Effective Time, the consummation of the Merger, and such Order or other action shall have become final and non-appealable), or (y) Section 7.1(d), (B) at the time of such termination, all of the conditions in Article 6 other than Section 6.1(c) (solely with respect to any Regulatory Law or any Order issued pursuant to or in respect of any Regulatory Law) or 6.1(d) have been satisfied or are capable of being satisfied prior to Closing (other than conditions that by their nature can only be satisfied on the Closing Date), or have been waived by Parent and Merger Sub and the Company, as applicable, and (C) at the time of such termination the Company is not in material breach of any representation, warranty, covenant or other agreement of the Company set forth in this Agreement where such breach by the Company is the primary cause of the failure of any condition to this Agreement being satisfied, then Parent shall pay to the Company prior to or concurrently with such termination, in the case of a termination by Parent, or within two (2) Business Days thereafter, in the case of a termination by the Company, the Parent Termination Fee.",
+        "reference_section": "Section 7.3 (c)"
+      },
+      "reverse_termination_fee_shareholder_approval_failure_supirior_proposal": {
+        "answer": "160000000",
+        "clause_text": "The \"Parent Termination Fee\" means one hundred sixty million dollars ($160,000,000).",
         "reference_section": "Section 7.3 (c)"
       }
     },
@@ -944,24 +986,24 @@
     },
     "extend_or_terminate_limitation_due_to_breach": {
       "extend_or_terminate_limitation_due_to_breach": {
-        "answer": "Not found",
-        "clause_text": "",
-        "reference_section": ""
+        "answer": "A party cannot terminate the agreement if their own material breach was the primary cause of the failure to close.",
+        "clause_text": "The Company may not rely on the failure of any conditions set forth in Sections 6.1 or 6.2 to be satisfied if the primary cause of such failure was a material breach of this Agreement by the Company.",
+        "reference_section": "Section 6.4"
       }
     }
   },
   "ordinary_course": {
     "company_ordinary_course_covenant": {
       "company_conduct_covenant_summary": {
-        "answer": "The target company is required to conduct its operations in all material respects in the ordinary course of business and use commercially reasonable efforts to maintain its current business relationships and workforce. Certain actions require prior written consent from the Parent, which should not be unreasonably withheld.",
+        "answer": "Between the date of this Agreement and the earlier of the Effective Time and the termination of this Agreement in accordance with Article 7, except (1) for any Permitted Action, (2) as set forth in Section 5.1 of the Company Disclosure Schedule, (3) as required by Law or Order, (4) for any action taken to comply with any COVID-19 Measures, (5) as otherwise expressly contemplated by any other provision of this Agreement, or (6) with the prior written consent of Parent (other than with respect to Sections 5.1(e) and 5.1(l)(i), not to be unreasonably withheld, conditioned or delayed), the Company will, and will cause each of its Subsidiaries to, (i) conduct its operations in all material respects in the ordinary course of business, and (ii) use commercially reasonable efforts to keep available the services of the current officers, employees and consultants of the Company and each of its Subsidiaries and to preserve the goodwill and current relationships of the Company and each of its Subsidiaries with customers, suppliers and other Persons with which the Company or any of its Subsidiaries has significant business relations.",
         "clause_text": "Between the date of this Agreement and the earlier of the Effective Time and the termination of this Agreement in accordance with Article 7, except (1) for any Permitted Action, (2) as set forth in Section 5.1 of the Company Disclosure Schedule, (3) as required by Law or Order, (4) for any action taken to comply with any COVID-19 Measures, (5) as otherwise expressly contemplated by any other provision of this Agreement, or (6) with the prior written consent of Parent (other than with respect to Sections 5.1(e) and 5.1(l)(i), not to be unreasonably withheld, conditioned or delayed), the Company will, and will cause each of its Subsidiaries to, (i) conduct its operations in all material respects in the ordinary course of business, and (ii) use commercially reasonable efforts to keep available the services of the current officers, employees and consultants of the Company and each of its Subsidiaries and to preserve the goodwill and current relationships of the Company and each of its Subsidiaries with customers, suppliers and other Persons with which the Company or any of its Subsidiaries has significant business relations.",
         "reference_section": "Section 5.1"
       }
     },
     "parent_ordinary_course_covenant": {
       "parent_conduct_covenant_summary": {
-        "answer": "commercially reasonable efforts",
-        "clause_text": "Parent will, and will cause each of its Subsidiaries (i) to conduct its operations in all material respects in the ordinary course of business, and (ii) to use commercially reasonable efforts to keep available the services of the current officers, employees and consultants of Parent and each of its Subsidiaries and to preserve the goodwill and current relationships of Parent and each of its Subsidiaries with customers, suppliers and other Persons with which Parent or any of its Subsidiaries has significant business relations.",
+        "answer": "Parent is obligated to conduct its operations in all material respects in the ordinary course of business and use commercially reasonable efforts to maintain relationships and services, except for any Permitted Action, as required by Law or Order, actions to comply with COVID-19 Measures, as expressly contemplated by the Agreement, or with the prior written consent of the Company.",
+        "clause_text": "Between the date of this Agreement and the earlier of the Effective Time and the termination of this Agreement in accordance with Article 7, except (1) for any Permitted Action, (2) as required by Law or Order, (3) for any action taken to comply with any COVID-19 Measures, (4) as otherwise expressly contemplated by any other provision of this Agreement, or (5) with the prior written consent of the Company (not to be unreasonably withheld, conditioned or delayed), Parent will, and will cause each of its Subsidiaries (i) to conduct its operations in all material respects in the ordinary course of business, and (ii) to use commercially reasonable efforts to keep available the services of the current officers, employees and consultants of Parent and each of its Subsidiaries and to preserve the goodwill and current relationships of Parent and each of its Subsidiaries with customers, suppliers and other Persons with which Parent or any of its Subsidiaries has significant business relations.",
         "reference_section": "Section 5.2"
       }
     }

@@ -360,6 +360,16 @@
         "answer": "Not found",
         "clause_text": "",
         "reference_section": ""
+      },
+      "parent_go_shop_included": {
+        "answer": false,
+        "clause_text": "Subject to the provisions of this Section 6.4, from the date hereof until the earlier of the Effective Time and the Termination Date, the Company agrees that it shall not, and shall cause its Subsidiaries not to, and shall use its reasonable best efforts to cause their respective Representatives not to, directly or indirectly, (i) solicit, initiate, induce, knowingly facilitate or knowingly encourage the making or submission of, any proposal, offer, inquiry or request that constitutes, or would reasonably be expected to result in or lead to, any Alternative Proposal...",
+        "reference_section": "Section 6.4 (a)"
+      },
+      "parent_go_shop_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "buyer_diligence_access": {
@@ -384,6 +394,28 @@
         "answer": "The agreement imposes procedural and timing-based restrictions on how the Company may change its recommendation.",
         "clause_text": "The Company shall have given Parent at least five (5) Business Days' written notice (a 'Superior Proposal Notice') advising Parent of its intention to make such a Change of Recommendation or terminate this Agreement, which Superior Proposal Notice shall include a description of the material terms and conditions of the Superior Proposal.",
         "reference_section": "Section 6.4 (e)"
+      }
+    },
+    "right_to_negotiate": {
+      "right_to_negotiate_included": {
+        "answer": false,
+        "clause_text": "Anything contained in this Agreement to the contrary notwithstanding, this Agreement may be terminated and abandoned at any time prior to the Effective Time, whether before or after any approval by the stockholders of the Company of the matters presented in connection with the Merger: (a) by the mutual written consent of the Company and Parent; (b) by either the Company or Parent if (i) the Effective Time shall not have occurred on or before 11:59 p.m. Eastern time on September 18, 2024...",
+        "reference_section": "Section 8.1"
+      },
+      "right_to_negotiate_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "right_to_negotiate_amended_included": {
+        "answer": false,
+        "clause_text": "in the event of any material modification of the financial terms or any other material modifications to the terms of such Superior Proposal, the Company shall be required to deliver a new written notice to Parent and to again comply with the requirements of this Section 6.4(e) with respect to such new written notice, except that the notice period under clause (A) shall be three (3) Business Days.",
+        "reference_section": "Section 6.4 (e)"
+      },
+      "right_to_negotiate_amended_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     }
   },
@@ -822,13 +854,23 @@
     "reverse_termination_fee_shareholder_approval": {
       "reverse_termination_fee_shareholder_approval_failure_exists": {
         "answer": false,
-        "clause_text": "Notwithstanding any provision in this Agreement to the contrary, in the event that: (i) this Agreement is terminated by Parent or the Company pursuant to Section 8.1(b)...",
+        "clause_text": "Notwithstanding any provision in this Agreement to the contrary, in the event that: (i) this Agreement is terminated by Parent or the Company pursuant to Section 8.1(b) and, at the time of such termination, (A) one or more of the conditions set forth in Section 7.1(b) or Section 7.1(c) (with respect to Section 7.1(b), only as the result of a Legal Restraint issued or granted in respect of the Merger or the other Contemplated Transactions by (x) a Governmental Entity in the U.S. or any other jurisdiction specified in Section 7.1(c) of the Company Disclosure Letter pursuant to the HSR Act or any other applicable Antitrust Law or Foreign Investment Law or (y) CFIUS or the President of the United States) have not been satisfied or waived, (B) the condition set forth in Section 7.1(a) has been satisfied and (C) all of the other conditions set forth in Section 7.3(a), Section 7.3(b) and Section 7.3(c) have been satisfied or waived (other than any such conditions that by their nature are to be satisfied at the Closing (if such conditions would be satisfied were the Closing to occur at such time)); or (ii) this Agreement is terminated by Parent or the Company pursuant to Section 8.1(c), only as the result of a Legal Restraint issued or granted in respect of the Contemplated Transactions by (A) a Governmental Entity in the U.S. or any other jurisdiction specified in Section 7.1(c) of the Company Disclosure Letter pursuant to the HSR Act or any other applicable Antitrust Law or Foreign Investment Law or (B) CFIUS or the President of the United States and, at the time of such termination, the condition set forth in Section 7.1(a) has been satisfied and one or more of the conditions set forth in Section 7.1(b) and Section 7.1(c) (with respect to Section 7.1(b), only as the result of a Legal Restraint issued or granted in respect of the Merger or the other Contemplated Transactions by (x) a Governmental Entity in the U.S. or any other jurisdiction specified in Section 7.1(c) of the Company Disclosure Letter pursuant to the HSR Act or any other applicable Antitrust Law or Foreign Investment Law or (y) CFIUS or the President of the United States) have not been satisfied or waived, and all of the other conditions set forth in Section 7.3(a), Section 7.3(b) and Section 7.3(c) have been satisfied or waived (other than any such conditions that by their nature are to be satisfied at the Closing (if such conditions would be satisfied were the Closing to occur at such time)); then, in each case, Parent shall pay the Parent Termination Fee to the Company as promptly as practicable (and, in any event, within three (3) Business Days following the date of the Company Election, which shall, for the avoidance of doubt, occur after the date of termination) by wire transfer of immediately available funds to an account designated by the Company.",
         "reference_section": "Section 8.3 (b)"
       },
       "reverse_termination_fee_shareholder_approval_failure": {
-        "answer": 565000000,
-        "clause_text": "Parent Termination Fee means an amount in cash equal to $565,000,000.",
-        "reference_section": "Section 1.1"
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "reverse_termination_fee_shareholder_approval_failure_exists_supirior_proposal": {
+        "answer": false,
+        "clause_text": "Notwithstanding any provision in this Agreement to the contrary, in the event that: (i) this Agreement is terminated by Parent or the Company pursuant to Section 8.1(b) and, at the time of such termination, (A) one or more of the conditions set forth in Section 7.1(b) or Section 7.1(c)...",
+        "reference_section": "Section 8.3 (b)"
+      },
+      "reverse_termination_fee_shareholder_approval_failure_supirior_proposal": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "termination_rights": {
@@ -912,7 +954,7 @@
     },
     "extend_or_terminate_limitation_due_to_breach": {
       "extend_or_terminate_limitation_due_to_breach": {
-        "answer": "A party cannot exercise its right to terminate the agreement if its own material breach was the proximate cause of the failure to close.",
+        "answer": "No Party may rely, either as a basis for not consummating the Merger or terminating this Agreement and abandoning the Merger, on the failure of any condition set forth in Section 7.1, Section 7.2 or Section 7.3, as the case may be, to be satisfied if such failure was caused by such Party's breach of any covenant or agreement of this Agreement.",
         "clause_text": "No Party may rely, either as a basis for not consummating the Merger or terminating this Agreement and abandoning the Merger, on the failure of any condition set forth in Section 7.1, Section 7.2 or Section 7.3, as the case may be, to be satisfied if such failure was caused by such Party's breach of any covenant or agreement of this Agreement.",
         "reference_section": "Section 7.4"
       }
@@ -921,8 +963,8 @@
   "ordinary_course": {
     "company_ordinary_course_covenant": {
       "company_conduct_covenant_summary": {
-        "answer": "The target company is required to conduct its business in all material respects in the ordinary course of business and use commercially reasonable efforts to maintain relationships, preserve its business organization, keep key employees, and maintain insurance coverage during the interim period.",
-        "clause_text": "The Company shall, shall cause its Subsidiaries to, and shall use commercially reasonable efforts to cause the Specified Joint Ventures to, conduct its business in all material respects in the ordinary course of business and use commercially reasonable efforts to (w) maintain existing relationships with Governmental Entities and material business relationships, (x) preserve intact its business organization, material assets, properties and Governmental Authorizations, (y) keep available the services of its key employees and (z) maintain its insurance coverage with regard to any material assets or properties;",
+        "answer": "The target company is required to conduct its business in all material respects in the ordinary course of business and use commercially reasonable efforts to maintain existing relationships, preserve its business organization, keep key employees, and maintain insurance coverage. Exceptions to this requirement include actions required by law, agreed upon by the Parent, permitted by the Agreement, specified in the Company Disclosure Letter, or necessary due to COVID-19 measures or emergencies. Parent's consent is required for deviations, which shall not be unreasonably withheld.",
+        "clause_text": "(a) From and after the date hereof and prior to the earlier of the Effective Time and the date, if any, on which this Agreement is earlier terminated pursuant to Section 8.1 (the \"Termination Date\"), except (i) as may be required by applicable Law, any Governmental Entity of competent jurisdiction or the rules or regulations of the NYSE or the CSE, (ii) as may be agreed in writing in advance by Parent, which consent shall not be unreasonably withheld, delayed or conditioned, (iii) as may be required or expressly permitted by this Agreement, (iv) as set forth in Section 6.1 of the Company Disclosure Letter or (v) for any action reasonably taken, or reasonably omitted to be taken, pursuant to any COVID-19 Measures, as otherwise necessary or appropriate to protect the health and safety of employees or others having business dealings with the Company, or in response to any bona fide Emergency, the Company shall, shall cause its Subsidiaries to, and shall use commercially reasonable efforts to cause the Specified Joint Ventures to, conduct its business in all material respects in the ordinary course of business and use commercially reasonable efforts to (w) maintain existing relationships with Governmental Entities and material business relationships, (x) preserve intact its business organization, material assets, properties and Governmental Authorizations, (y) keep available the services of its key employees and (z) maintain its insurance coverage with regard to any material assets or properties; provided, that this sentence shall in no event prohibit allowing any Company Contracts with employees, service providers, suppliers, customers, distributors, and other Persons having business relationships with the Acquired Companies (or the Specified Joint Ventures, as applicable) to expire in accordance with their terms; provided, further, that no action by the Company or its Subsidiaries with respect to matters specifically addressed by any provision of Section 6.1(b) shall be deemed a breach of this sentence unless such action would constitute a breach of such provision of Section 6.1(b).",
         "reference_section": "Section 6.1 (a)"
       }
     },

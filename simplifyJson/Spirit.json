@@ -367,6 +367,16 @@
         "answer": "Not found",
         "clause_text": "",
         "reference_section": ""
+      },
+      "parent_go_shop_included": {
+        "answer": false,
+        "clause_text": "Except as otherwise permitted by this Section 5.3, the Company will, and will cause its directors, officers and employees to, and will instruct its other Representatives to: (i) (A) immediately cease and cause to be terminated any solicitation, discussions or negotiations with any Persons that may be ongoing with respect to any Acquisition Proposal...",
+        "reference_section": "Section 5.3 (a)"
+      },
+      "parent_go_shop_explanation": {
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
       }
     },
     "buyer_diligence_access": {
@@ -390,6 +400,28 @@
       "recommendation_change_restriction_explanation": {
         "answer": "The agreement imposes procedural and timing-based restrictions on how the Company may change its recommendation.",
         "clause_text": "The Company has provided prior written notice to Parent, at least four (4) Business Days in advance (the \"Notice Period\"), of the Company's intention to take such action with respect to such Superior Proposal...prior to effecting such Change of Board Recommendation or terminating this Agreement...the Company will, during the Notice Period, negotiate with Parent in good faith...",
+        "reference_section": "Section 5.3 (f)"
+      }
+    },
+    "right_to_negotiate": {
+      "right_to_negotiate_included": {
+        "answer": false,
+        "clause_text": "This Agreement may be terminated, and the Merger contemplated hereby may be abandoned by action taken or authorized by the Board of Directors of the terminating party or parties, whether before or after adoption of this Agreement by the stockholders of the Company or of Merger Sub: (a) By mutual written consent of Parent and the Company, by action of their respective Boards of Directors, at any time prior to the Effective Time; (b) By either the Company or Parent, if any court of competent jurisdiction or other Governmental Entity has issued an Order or taken any other action permanently restraining, enjoining or otherwise prohibiting the Merger, which Order or other action has become final and nonappealable (which Order the party seeking to terminate this Agreement has used its reasonable best efforts to resist, resolve or lift, as applicable, as required by Section 5.5); (c) By Parent, if a Triggering Event has occurred; (d) By the Company, in connection with the Company Board's causing the Company to enter into an Alternative Acquisition Agreement with respect to a Superior Proposal in accordance with Section 5.3(f); (e) By Parent or the Company, if the Effective Time has not occurred on or before July 28, 2023 (the \"Outside Date\"); provided, however, that the Outside Date shall be automatically extended to January 28, 2024 (as so extended, the \"Extended Outside Date\") if the condition set forth in Section 6.1(b) (or Section 6.1(c), to the extent related to Section 6.1(b)) has not been satisfied prior to the initial Outside Date (but all other conditions to Closing are satisfied, other than those conditions that by their nature are to be satisfied at the Closing, which conditions shall be capable of being satisfied at such time); provided, further, that the Extended Outside Date shall be automatically extended to July 24, 2024 (as so extended, the \"Second Extended Outside Date\"), if the condition set forth in Section 6.1(b) (or Section 6.1(c), to the extent related to Section 6.1(b)) has not been satisfied prior to the Extended Outside Date (but all other conditions to Closing are satisfied, other than those conditions that by their nature are to be satisfied at the Closing, which conditions shall be capable of being satisfied at such time); provided, further, that the Company and Parent may agree to further extend the Second Extended Outside Date by mutual written agreement; and provided, further, that the right to terminate this Agreement under this Section 7.1(e) shall not be available to any party whose failure to fulfill any agreements or covenants under this Agreement has been the principal cause of, or resulted in, the failure of the Effective Time to occur on or before such date; (f) By Parent, if: (i) there is an Uncured Inaccuracy in any representation or warranty of the Company contained in this Agreement or a breach of any covenant of the Company contained in this Agreement, in any case, such that any condition to the Merger in Section 6.2(a) or Section 6.2(b) is not satisfied, (ii) Parent has delivered to the Company written notice of such Uncured Inaccuracy or breach and (iii) either such Uncured Inaccuracy or breach is not capable of cure or, if curable, has not been cured in all material respects prior to the earlier of (x) the Outside Date (as may be extended pursuant to Section 7.1(e)) and (y) the thirtieth (30th) day following the delivery of such written notice to the Company; provided, however, that Parent will not be permitted to terminate this Agreement pursuant to this Section 7.1(f) if: (A) any covenant of Parent or Merger Sub contained in this Agreement has been breached such that the condition to the Merger in Section 6.3(b) is not satisfied; or (B) there is an Uncured Inaccuracy in any representation or warranty of Parent or Merger Sub contained in this Agreement such that the condition to the Merger in Section 6.3(a) is not satisfied; (g) By the Company, if: (i) there is an Uncured Inaccuracy in any representation or warranty of Parent or Merger Sub contained in this Agreement or breach of any covenant of Parent or Merger Sub contained in this Agreement, in any case, such that any condition to the Merger in Section 6.3(a) or Section 6.3(b) is not satisfied, (ii) the Company has delivered to Parent written notice of such Uncured Inaccuracy or breach and (iii) either such Uncured Inaccuracy or breach is not capable of cure or, if curable, has not been cured in all material respects prior to the earlier of (x) the Outside Date (as may be extended pursuant to Section 7.1(e)) and (y) the thirtieth day following the delivery of such written notice to Parent; provided, however, that the Company will not be permitted to terminate this Agreement pursuant to this Section 7.1(g) if: (A) any covenant of the Company contained in this Agreement has been breached such that the condition to the Merger in Section 6.2(b) is not satisfied; or (B) there is an Uncured Inaccuracy in any representation or warranty of the Company contained in this Agreement such that the condition to the Merger in Section 6.2(a) is not satisfied; or (h) By Parent or the Company, if the Company Required Vote shall not have been obtained at the Company Stockholder Meeting duly convened therefor, including at any adjournment or postponement thereof.",
+        "reference_section": "Section 7.1"
+      },
+      "right_to_negotiate_explanation": {
+        "answer": "The merger agreement requires the Parent to give the Company an initial consultation or negotiation period before changing its recommendation, terminating the agreement, or entering into a Parent Superior Proposal.",
+        "clause_text": "The Company has provided prior written notice to Parent, at least four (4) Business Days in advance (the \"Notice Period\"), of the Company's intention to take such action with respect to such Superior Proposal...prior to effecting such Change of Board Recommendation or terminating this Agreement to enter into an Alternative Acquisition Agreement with respect to such Superior Proposal, the Company will, during the Notice Period, negotiate with Parent in good faith...",
+        "reference_section": "Section 5.3 (f)"
+      },
+      "right_to_negotiate_amended_included": {
+        "answer": true,
+        "clause_text": "provided, that in the event of any material revisions to the Superior Proposal, the Company will be required to deliver a new written notice to Parent and to comply with the requirements of this Section 5.3(f) with respect to such new written notice; provided, further, that the Notice Period for any subsequent notice will be shortened from four (4) Business Days to two (2) Business Days;",
+        "reference_section": "Section 5.3 (f)"
+      },
+      "right_to_negotiate_amended_explanation": {
+        "answer": "The merger agreement requires the Parent to give the Company an additional consultation or negotiation period when a Parent Superior Proposal is amended or modified after the initial consultation window.",
+        "clause_text": "provided, that in the event of any material revisions to the Superior Proposal, the Company will be required to deliver a new written notice to Parent and to comply with the requirements of this Section 5.3(f) with respect to such new written notice; provided, further, that the Notice Period for any subsequent notice will be shortened from four (4) Business Days to two (2) Business Days;",
         "reference_section": "Section 5.3 (f)"
       }
     }
@@ -823,13 +855,23 @@
     "reverse_termination_fee_shareholder_approval": {
       "reverse_termination_fee_shareholder_approval_failure_exists": {
         "answer": false,
-        "clause_text": "In the event of termination of this Agreement by either the Company or Parent as provided in Section 7.1, this Agreement will forthwith become void and of no effect, and there will be no liability or obligation on the part of Parent, Merger Sub or the Company or their respective Subsidiaries, officers or directors except (i) the Confidentiality Agreement (as amended hereby) and Section 3.34, Section 4.13, the last two sentences of Section 5.2, the expense reimbursement and indemnification obligations in Section 5.17(c), Section 5.18(e), Section 5.18(f), this Section 7.2 and Article 8 shall remain in effect...",
+        "clause_text": "In the event of termination of this Agreement by either the Company or Parent as provided in Section 7.1, this Agreement will forthwith become void and of no effect, and there will be no liability or obligation on the part of Parent, Merger Sub or the Company or their respective Subsidiaries, officers or directors except (i) the Confidentiality Agreement (as amended hereby) and Section 3.34, Section 4.13, the last two sentences of Section 5.2, the expense reimbursement and indemnification obligations in Section 5.17(c), Section 5.18(e), Section 5.18(f), this Section 7.2 and Article 8 shall remain in effect and (ii) subject to Section 7.2(g), nothing herein shall relieve any party from any liabilities or damages incurred or suffered by a party as a result of the Intentional Breach by another party of any of its representations, warranties, covenants or other agreements set forth in this Agreement prior to the date of such termination, in which case the aggrieved party shall be entitled to all rights and remedies available at law or equity.",
         "reference_section": "Section 7.2"
       },
       "reverse_termination_fee_shareholder_approval_failure": {
-        "answer": "Not specified",
-        "clause_text": "In the event that this Agreement is terminated pursuant to Section 7.1(b) (solely to the extent the Order giving rise to such termination right relates to applicable U.S. federal Competition Laws) or Section 7.1(e) (solely to the extent that, at the time of such termination, the conditions in Section 6.1(b)(i) or Section 6.1(c) (solely to the extent of an Order, other action or Law relating to applicable US federal Competition Laws) shall not have been satisfied) and at the time of either such termination all of the other conditions set forth in Section 6.1 (other than Section 6.1(c) (to the extent the Order, other action or Law giving rise to the failure of such condition relates to applicable U.S. federal Competition Laws)) and the conditions set forth in Section 6.2 have been satisfied...",
-        "reference_section": "Section 7.2 (e)"
+        "answer": "Not found",
+        "clause_text": "",
+        "reference_section": ""
+      },
+      "reverse_termination_fee_shareholder_approval_failure_exists_supirior_proposal": {
+        "answer": false,
+        "clause_text": "This Agreement may be terminated, and the Merger contemplated hereby may be abandoned by action taken or authorized by the Board of Directors of the terminating party or parties, whether before or after adoption of this Agreement by the stockholders of the Company or of Merger Sub: (a) By mutual written consent of Parent and the Company...",
+        "reference_section": "Section 7.1"
+      },
+      "reverse_termination_fee_shareholder_approval_failure_supirior_proposal": {
+        "answer": "Not found",
+        "clause_text": "In the event of termination of this Agreement by either the Company or Parent as provided in Section 7.1, this Agreement will forthwith become void and of no effect, and there will be no liability or obligation on the part of Parent, Merger Sub or the Company or their respective Subsidiaries, officers or directors except (i) the Confidentiality Agreement (as amended hereby) and Section 3.34, Section 4.13, the last two sentences of Section 5.2, the expense reimbursement and indemnification obligations in Section 5.17(c), Section 5.18(e), Section 5.18(f), this Section 7.2 and Article 8 shall remain in effect...",
+        "reference_section": "Section 7.2"
       }
     },
     "termination_rights": {
@@ -911,17 +953,17 @@
     },
     "extend_or_terminate_limitation_due_to_breach": {
       "extend_or_terminate_limitation_due_to_breach": {
-        "answer": "A party cannot exercise its right to terminate the agreement if its own material breach was the proximate cause of the failure to close.",
-        "clause_text": "provided, further, that the right to terminate this Agreement under this Section 7.1(e) shall not be available to any party whose failure to fulfill any agreements or covenants under this Agreement has been the principal cause of, or resulted in, the failure of the Effective Time to occur on or before such date;",
-        "reference_section": "Section 7.1"
+        "answer": "The right to terminate this Agreement under this Section 7.1(e) shall not be available to any party whose failure to fulfill any agreements or covenants under this Agreement has been the principal cause of, or resulted in, the failure of the Effective Time to occur on or before such date.",
+        "clause_text": "The right to terminate this Agreement under this Section 7.1(e) shall not be available to any party whose failure to fulfill any agreements or covenants under this Agreement has been the principal cause of, or resulted in, the failure of the Effective Time to occur on or before such date.",
+        "reference_section": "Section 7.1 (e)"
       }
     }
   },
   "ordinary_course": {
     "company_ordinary_course_covenant": {
       "company_conduct_covenant_summary": {
-        "answer": "The Company is required to conduct its operations in the ordinary course of business and use commercially reasonable efforts to preserve its business organization, maintain key relationships, and comply with material obligations, unless otherwise required by law or with Parent's consent.",
-        "clause_text": "The Company will conduct its operations in the ordinary course of business and use commercially reasonable efforts to (i) preserve substantially intact its business organization, (ii) keep available the services of its executive officers and key employees, (iii) maintain in effect all Company Permits, (iv) remain in compliance in all material respects with the Company Treasury Restrictions and (v) maintain satisfactory relationships of the Company with any persons with which the Company has material business relations and with Governmental Entities that have jurisdiction over its Business and operations.",
+        "answer": "The Company is required to conduct its operations in the ordinary course of business and use commercially reasonable efforts to preserve its business organization, maintain key relationships, and comply with material regulations. Exceptions to this covenant include actions set forth in Section 5.1 of the Company Disclosure Schedule, actions expressly contemplated by the Agreement, or actions required by applicable law, provided that the Company gives prior notice to Parent. Parent's prior written consent is required for certain actions, which cannot be unreasonably withheld.",
+        "clause_text": "The Company covenants and agrees that, between the date of this Agreement and the Effective Time, except as set forth in Section 5.1 of the Company Disclosure Schedule or as expressly contemplated by any other provision of this Agreement or as required by applicable Law (provided, that if the Company is required by applicable Law to take an action in conflict with this Section 5.1, it will, to the extent permitted by Law, provide Parent with written notice in advance of taking such action), unless Parent provides prior written consent (which consent will not be unreasonably withheld, delayed or conditioned), the Company will conduct its operations in the ordinary course of business and use commercially reasonable efforts to (i) preserve substantially intact its business organization, (ii) keep available the services of its executive officers and key employees, (iii) maintain in effect all Company Permits, (iv) remain in compliance in all material respects with the Company Treasury Restrictions and (v) maintain satisfactory relationships of the Company with any persons with which the Company has material business relations and with Governmental Entities that have jurisdiction over its Business and operations.",
         "reference_section": "Section 5.1"
       }
     },
