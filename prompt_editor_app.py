@@ -75,7 +75,7 @@ if 'model_provider' not in st.session_state:
     st.session_state.model_provider = "OpenAI"
 
 if 'selected_model' not in st.session_state:
-    st.session_state.selected_model = "GPT-4"
+    st.session_state.selected_model = "GPT-5.1"
 
 if 'config_dict' not in st.session_state:
     st.session_state.config_dict = None
@@ -922,9 +922,13 @@ def get_model_config():
 
     if provider == "OpenAI":
         model_configs = {
-            "GPT-4": {
-                "model": "gpt-4",
+            "GPT-5.1": {
+                "model": "gpt-5.1-2025-11-13",
                 "temperature": 0
+            },
+            "GPT-5": {
+                "model": "gpt-5-2025-08-07",
+                "temperature": 1
             },
             "GPT-4.1": {
                 "model": "gpt-4.1",
@@ -932,6 +936,10 @@ def get_model_config():
             },
             "GPT-4o": {
                 "model": "gpt-4o",
+                "temperature": 0
+            },
+            "GPT-4": {
+                "model": "gpt-4",
                 "temperature": 0
             },
             "GPT-3.5 Turbo": {
@@ -1357,7 +1365,8 @@ with st.sidebar:
                 unsafe_allow_html=True)
 
     # Group models by provider
-    openai_models = ["GPT-4", "GPT-4.1", "GPT-4o", "GPT-3.5 Turbo"]
+    openai_models = ["GPT-5.1", "GPT-5", "GPT-4.1",
+                     "GPT-4o", "GPT-4", "GPT-3.5 Turbo"]
     google_models = ["Gemini 2.0 Flash", "Gemini 2.5 Flash",
                      "Gemini 2.5 Pro", "Gemini 1.5 Pro"]
     anthropic_models = ["Claude Opus 4.5", "Claude Opus 4.1", "Claude Opus 4",
@@ -1454,7 +1463,9 @@ with st.sidebar:
         for key, value in st.session_state.config_dict.items():
             summary_type = value.get("summary_type", "Un")
             summary_type_short = summary_type[:3]  # Get first 3 characters
-            template_options.append(f"[{summary_type_short}] {key}")
+            # Skip templates with "OFF" summary_type
+            if summary_type_short.upper() != "OFF":
+                template_options.append(f"[{summary_type_short}] {key}")
 
         selected_option = st.selectbox(
             "Choose a template to edit:", template_options)
